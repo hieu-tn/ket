@@ -1,0 +1,8 @@
+black==21.5b1
+Django==3.2.3
+djangorestframework==3.12.4
+psycopg2-binary==2.8.6
+djangorestframework==3.12.4
+django-cors-headers==3.7.0
+django-debug-toolbar==3.2.1
+django-extensions==3.1.3

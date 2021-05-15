@@ -1,0 +1,71 @@
+version: "3.9"
+
+services:
+
+  db:
+    image: postgres:13
+    container_name: ket_db
+    restart: always
+    networks:
+      - ket_network
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_DB: ket
+      POSTGRES_USER: ket_admin
+      POSTGRES_PASSWORD: ket_admin
+
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: server
+    container_name: ket_server
+    restart: always
+    depends_on:
+      - db
+    networks:
+      - ket_network
+    volumes:
+      - ./backend-v1:/usr/src/app
+      - ./wait-for-it.sh:/usr/src/app/wait-for-it.sh
+    ports:
+      - 8000:8000
+    env_file:
+      - ./backend-v1/.env
+    environment:
+      DATABASE_HOST: db
+      DATABASE_PORT: 5432
+
+  adminer:
+    image: adminer:4
+    container_name: ket_adminer
+    restart: always
+    depends_on:
+      - db
+    networks:
+      - ket_network
+    ports:
+      - 8080:8080
+
+#  app:
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#      target: app
+#    restart: always
+#    networks:
+#      - ket_network
+#    volumes:
+#      - ./frontend-v1:/app
+#    ports:
+#      - 4200:4200
+
+
+networks:
+  ket_network:
+    driver: bridge
+
+
+volumes:
+  data:
