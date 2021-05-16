@@ -13,7 +13,8 @@ ADD backend-v1/requirements.txt /usr/src/app
 RUN pip install -r requirements.txt
 
 # copy source code
-ADD backend-v1 /usr/src/app
+ADD ./wait-for-it.sh /wait-for-it.sh
+#ADD backend-v1 /usr/src/app
 
 # run entrypoint.sh
 ENTRYPOINT ["/usr/src/app/entrypoint.sh"]

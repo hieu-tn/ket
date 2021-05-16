@@ -30,7 +30,6 @@ services:
       - ket_network
     volumes:
       - ./backend-v1:/usr/src/app
-      - ./wait-for-it.sh:/usr/src/app/wait-for-it.sh
     ports:
       - 8000:8000
     env_file:
