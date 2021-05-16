@@ -10,6 +10,8 @@ services:
       - ket_network
     ports:
       - 5432:5432
+#    volumes:
+#      - ./db-data:/var/lib/postgresql/data
     environment:
       POSTGRES_DB: ket
       POSTGRES_USER: ket_admin
@@ -37,16 +39,16 @@ services:
       DATABASE_HOST: db
       DATABASE_PORT: 5432
 
-  adminer:
-    image: adminer:4
-    container_name: ket_adminer
-    restart: always
-    depends_on:
-      - db
-    networks:
-      - ket_network
-    ports:
-      - 8080:8080
+#  adminer:
+#    image: adminer:4
+#    container_name: ket_adminer
+#    restart: always
+#    depends_on:
+#      - db
+#    networks:
+#      - ket_network
+#    ports:
+#      - 8080:8080
 
 #  app:
 #    build:
@@ -68,4 +70,4 @@ networks:
 
 
 volumes:
-  data:
+  db-data:

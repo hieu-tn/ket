@@ -23,3 +23,4 @@ CMD ["python", "manage.py", "runserver", "0:8000", "--settings=ket.settings.deve
 FROM node:16 as app
 
 WORKDIR /app
+

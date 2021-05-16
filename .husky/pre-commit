@@ -1,0 +1,49 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+# START - Init values
+BACKEND_DIR=backend-v1
+FRONTEND_DIR=frontend-v1
+# END - Init values
+
+# shellcheck disable=SC2112
+function get_black() {
+  if [ $(python3 -m pip list | grep -c black) = "0" ]; then
+    python3 -m pip install black
+  fi
+}
+
+function is_modified() {
+  local IS_MODIFIED=false
+  local FILES=$1[@]
+  local DIR=$2
+  for FILE in $FILES; do
+    if [[ $FILE == *$DIR* ]]; then
+      IS_MODIFIED=true
+      break # Skip entire rest of loop.
+    fi
+  done
+  echo $IS_MODIFIED
+}
+
+# START - Check modifications
+echo Checking modifications...
+
+DIFF_FILES=$(git diff --name-only HEAD)
+
+IS_MODIFIED_BACKEND=$(is_modified "$DIFF_FILES" $BACKEND_DIR)
+# END - Check modifications
+
+# START - Lint
+if $IS_MODIFIED_BACKEND; then
+  echo Found modifications in $BACKEND_DIR
+  cd $BACKEND_DIR
+  get_black
+  black . -S --diff --color
+  # shellcheck disable=SC2103
+  cd ..
+else
+  echo Could not find any modifications
+  echo Run no lint command...
+fi
+# END - Lint
