@@ -5,7 +5,7 @@ services:
   db:
     image: postgres:13
     container_name: ket_db
-    restart: always
+#    restart: always
     networks:
       - ket_network
     ports:
@@ -23,7 +23,7 @@ services:
       dockerfile: Dockerfile
       target: server
     container_name: ket_server
-    restart: always
+#    restart: always
     depends_on:
       - db
     networks:

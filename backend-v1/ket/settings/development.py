@@ -1,4 +1,4 @@
-from .common import *
+from .base import *
 
 # https://docs.djangoproject.com/en/dev/ref/settings/#debug
 DEBUG = True
