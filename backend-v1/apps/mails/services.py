@@ -1,4 +1,3 @@
-import os
 from typing import Union
 
 from django.core.mail import EmailMessage
@@ -26,6 +25,24 @@ class MailService:
             MailService()
 
         return MailService.__instance
+
+    def send_new_password_mail(self, email: str, **kwargs):
+        try:
+            template = get_template('forgot_password.html')
+            context = {'email': email, 'password': kwargs.get('password')}
+            content = template.render(context)
+            self.send_mail(
+                subject='Forgot Password',
+                body=content,
+                from_email=kwargs.get('from_email'),
+                to=[email],
+                bcc=kwargs.get('bcc'),
+                attachments=kwargs.get('attachments'),
+                cc=kwargs.get('cc'),
+                reply_to=kwargs.get('reply_to'),
+            )
+        except Exception as e:
+            raise e
 
     def send_signup_verification_mail(self, email: str, **kwargs):
         try:

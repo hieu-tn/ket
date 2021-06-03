@@ -4,12 +4,12 @@ import logging
 from django.contrib.auth.hashers import make_password
 from rest_framework import viewsets
 from rest_framework.exceptions import ParseError
-from rest_framework.response import Response
 
 from ..models import User
 from ..serializers import UserSerializer
 from ...contrib import constants as constant
-from ...contrib.exceptions import UserExistsException, ResourceCreatedResponse
+from ...contrib.exceptions import UserExistsException
+from ...contrib.responses import ResourceCreatedResponse
 from ...contrib.services.jwt import JwtService
 from ...mails.services import MailService
 

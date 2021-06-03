@@ -25,7 +25,12 @@ class PayloadConversionMiddleware(MiddlewareMixin):
     def process_response(self, request, response):
         try:
             response_data = getattr(response, 'data', response.content)
-            if response_data and isinstance(response_data, dict) and not isinstance(response, TemplateResponse):
+            if (
+                response_data
+                and isinstance(response_data, dict)
+                and not isinstance(response, TemplateResponse)
+                and 200 <= response.status_code < 300
+            ):
                 logger.info(response.data)
                 response_data = convert_json(response_data, snake_to_camel)
                 response_data = json.dumps(response_data).encode('utf-8')
