@@ -2,8 +2,8 @@
 . "$(dirname "$0")/_/husky.sh"
 
 # START - Init values
-BACKEND_DIR=backend-v1
-FRONTEND_DIR=frontend-v1
+BACKEND_DIR=server
+FRONTEND_DIR=app
 # END - Init values
 
 # shellcheck disable=SC2112

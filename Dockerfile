@@ -9,12 +9,12 @@ RUN apt-get update \
   && rm -rf /var/lib/apt/lists/*
 
 # install dependencies
-ADD backend-v1/requirements.txt /usr/src/app
+ADD server/requirements.txt /usr/src/app
 RUN pip install -r requirements.txt
 
 # copy source code
 ADD ./wait-for-it.sh /wait-for-it.sh
-#ADD backend-v1 /usr/src/app
+#ADD server /usr/src/app
 
 # run entrypoint.sh
 ENTRYPOINT ["/usr/src/app/entrypoint.sh"]
