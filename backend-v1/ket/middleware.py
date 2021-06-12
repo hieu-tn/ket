@@ -33,7 +33,7 @@ class PayloadConversionMiddleware(MiddlewareMixin):
             ):
                 logger.info(response.data)
                 response_data = convert_json(response_data, snake_to_camel)
-                response_data = json.dumps(response_data).encode('utf-8')
+                response_data = json.dumps(response_data, separators=(',', ':')).encode('utf-8')
                 setattr(response, 'content', response_data)
                 response.render()
         except Exception as e:

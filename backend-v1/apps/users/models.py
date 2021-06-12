@@ -9,23 +9,24 @@ from .managers import CustomUserManager
 logger = logging.getLogger(__name__)
 
 
+class Status(models.TextChoices):
+    FORCE_CHANGE_PASSWORD = 'FORCE_CHANGE_PASSWORD', _('FORCE_CHANGE_PASSWORD')
+    ARCHIVED = 'ARCHIVED', _('ARCHIVED')
+    CONFIRMED = 'CONFIRMED', _('CONFIRMED')
+    UNCONFIRMED = 'UNCONFIRMED', _('UNCONFIRMED')
+
+
 class User(AbstractUser):
     objects = CustomUserManager()
-
-    class Status(models.TextChoices):
-        FORCE_CHANGE_PASSWORD = 'FORCE_CHANGE_PASSWORD', _('FORCE_CHANGE_PASSWORD')
-        ARCHIVED = 'ARCHIVED', _('ARCHIVED')
-        CONFIRMED = 'CONFIRMED', _('CONFIRMED')
-        UNCONFIRMED = 'UNCONFIRMED', _('UNCONFIRMED')
 
     status = models.CharField(max_length=40, choices=Status.choices, default=Status.UNCONFIRMED, null=True, blank=True)
 
     def update_status_force_change_password(self):
         try:
-            if self.status == self.Status.UNCONFIRMED:
+            if self.status == Status.UNCONFIRMED:
                 raise self.NotConfirmed()
 
-            self.update_status(self.Status.FORCE_CHANGE_PASSWORD)
+            self.update_status(Status.FORCE_CHANGE_PASSWORD)
         except Exception as e:
             raise e
 

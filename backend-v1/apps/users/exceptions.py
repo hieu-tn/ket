@@ -14,7 +14,13 @@ class UserDoesNotExistException(APIException):
     default_code = 'user_not_exist'
 
 
-class UserHaveNotConfirmedException(APIException):
+class UserHasNotConfirmedException(APIException):
     status_code = status.HTTP_401_UNAUTHORIZED
-    default_detail = _('User have not confirmed yet')
+    default_detail = _('User has not confirmed yet')
     default_code = 'user_not_confirmed'
+
+
+class UserHasBeenArchivedException(APIException):
+    status_code = status.HTTP_401_UNAUTHORIZED
+    default_detail = _('User has been archived')
+    default_code = 'user_archived'
