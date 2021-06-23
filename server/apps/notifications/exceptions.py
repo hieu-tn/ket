@@ -1,0 +1,2 @@
+class InvalidChannelException(Exception):
+    pass

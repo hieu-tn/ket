@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 '''
 import datetime
 import os
+from datetime import timedelta
 from pathlib import Path
 
 from apps.authentication import constants as auth_constant
@@ -51,6 +52,7 @@ LOCAL_APPS = [
     'apps.users',
     'apps.mails',
     'apps.authentication',
+    'apps.notifications',
 ]
 
 INSTALLED_APPS = SHARED_APPS + [app for app in LOCAL_APPS if app not in SHARED_APPS]
@@ -218,7 +220,6 @@ EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
 DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'info@ket.com')
 
-
 # LOGGING
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#logging
@@ -230,26 +231,35 @@ LOGGING = {
     'disable_existing_loggers': False,
     'formatters': {
         'verbose': {
-            'format': '{asctime} | {levelname} | {module} | {process} | {thread} | {message}',
+            'format': '[{asctime}] | {name} | {levelname} | {message}',
             'style': '{',
             'datefmt': '%Y-%m-%d %H:%M:%S',
         },
         'simple': {
-            'format': '{asctime} | {levelname} | {module} | {message}',
+            'format': '{name} | {message}',
             'style': '{',
-            'datefmt': '%Y-%m-%d %H:%M:%S',
         },
+    },
+    'filters': {
+        'console': {'()': 'ket.log.LogLevelFilter', 'levels': ['DEBUG', 'WARNING', 'ERROR', 'CRITICAL']},
+        'info': {'()': 'ket.log.LogLevelFilter', 'levels': ['INFO']},
     },
     'handlers': {
         'console': {
             'level': 'DEBUG',
+            'filters': ['console'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+        'info': {
+            'level': 'INFO',
+            'filters': ['info'],
             'class': 'logging.StreamHandler',
             'formatter': 'simple',
         },
     },
-    'root': {'level': 'INFO', 'handlers': ['console']},
+    'root': {'level': 'DEBUG', 'handlers': ['console', 'info']},
 }
-
 
 # django-rest-framework
 # -------------------------------------------------------------------------------
@@ -261,16 +271,18 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
+        'rest_framework.permissions.DjangoModelPermissions',
     ],
     'DEFAULT_PARSER_CLASSES': [
-        'ket.parsers.PayloadConversionParser',
+        'ket.parsers.PayloadConversionFormParser',
+        'ket.parsers.PayloadConversionMultiPartParser',
+        'ket.parsers.PayloadConversionJSONParser',
     ],
     'DEFAULT_RENDERER_CLASSES': [
-        'ket.renderers.PayloadConversionRenderer',
-        'rest_framework.renderers.BrowsableAPIRenderer',
+        'ket.renderers.PayloadConversionJSONRenderer',
+        'ket.renderers.PayloadConversionBrowsableAPIRenderer',
     ],
 }
-
 
 # djangorestframework-simplejwt
 # -------------------------------------------------------------------------------

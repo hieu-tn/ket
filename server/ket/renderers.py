@@ -1,15 +1,19 @@
 import logging
 
-from rest_framework.renderers import JSONRenderer
-
-from apps.contrib.utils import convert_json, snake_to_camel
+from djangorestframework_camel_case.render import CamelCaseJSONRenderer, CamelCaseBrowsableAPIRenderer
 
 logger = logging.getLogger(__name__)
 
 
-class PayloadConversionRenderer(JSONRenderer):
-    def render(self, data, accepted_media_type=None, renderer_context=None):
-        if isinstance(data, dict):
-            data = convert_json(data, snake_to_camel)
+class PayloadConversionJSONRenderer(CamelCaseJSONRenderer):
+    def render(self, data, *args, **kwargs):
+        payload = super().render(data, *args, **kwargs)
+        logger.info(payload)
+        return payload
 
-        return super().render(data, accepted_media_type, renderer_context)
+
+class PayloadConversionBrowsableAPIRenderer(CamelCaseBrowsableAPIRenderer):
+    def render(self, data, *args, **kwargs):
+        payload = super().render(data, *args, **kwargs)
+        logger.info(payload)
+        return payload

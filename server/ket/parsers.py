@@ -1,13 +1,30 @@
-from rest_framework.parsers import JSONParser
+import logging
 
-from apps.contrib.utils import convert_json, camel_to_snake
+from djangorestframework_camel_case.parser import CamelCaseFormParser, CamelCaseMultiPartParser, CamelCaseJSONParser
+
+logger = logging.getLogger(__name__)
 
 
-class PayloadConversionParser(JSONParser):
+class NoUnderscoreBeforeNumberCamelCaseParser:
+    json_underscoreize = {'no_underscore_before_number': True}
+
+
+class PayloadConversionFormParser(CamelCaseFormParser, NoUnderscoreBeforeNumberCamelCaseParser):
     def parse(self, stream, media_type=None, parser_context=None):
-        try:
-            payload = super().parse(stream, media_type, parser_context)
-            payload = convert_json(payload, camel_to_snake)
-            return payload
-        except Exception as e:
-            raise e
+        payload = super().parse(stream, media_type, parser_context)
+        logger.info(payload)
+        return payload
+
+
+class PayloadConversionMultiPartParser(CamelCaseMultiPartParser, NoUnderscoreBeforeNumberCamelCaseParser):
+    def parse(self, stream, media_type=None, parser_context=None):
+        payload = super().parse(stream, media_type, parser_context)
+        logger.info(payload)
+        return payload
+
+
+class PayloadConversionJSONParser(CamelCaseJSONParser, NoUnderscoreBeforeNumberCamelCaseParser):
+    def parse(self, stream, media_type=None, parser_context=None):
+        payload = super().parse(stream, media_type, parser_context)
+        logger.info(payload)
+        return payload

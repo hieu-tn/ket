@@ -2,8 +2,9 @@ DATABASE_CONTAINER := ket_db
 SERVER_CONTAINER := ket_server
 APP_CONTAINER := ket_app
 DOCKER_COMPOSE := docker-compose.yml
+APP_DIRECTORY := app
 
-ket.up:
+ket.server:
 	docker compose -f ${DOCKER_COMPOSE} up --build
 
 ket.down:
@@ -13,7 +14,10 @@ ket.ssh:
 	docker exec -it ${SERVER_CONTAINER} bash
 
 ket.db.ssh:
-	docker exec -it ${DATABASE_CONTAINER} bash;
+	docker exec -it ${DATABASE_CONTAINER} bash
 
 ket.lint:
-	docker exec -it ${SERVER_CONTAINER} black . -S --diff --color;
+	docker exec -it ${SERVER_CONTAINER} black . -S --diff --color
+
+ket.app:
+	cd ${APP_DIRECTORY} && flutter run

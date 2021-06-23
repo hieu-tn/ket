@@ -16,6 +16,7 @@ from ..users.exceptions import UserDoesNotExistException, UserHasNotConfirmedExc
 from ..users.models import User, Status
 from ..users.serializers import UserSerializer
 from ..users import constants as users_constant
+from .. import notifications as notifications_app
 
 logger = logging.getLogger(__name__)
 
@@ -25,6 +26,17 @@ class AuthenticationViewSet(viewsets.ViewSet):
     authentication_classes = ()
 
     www_authenticate_realm = 'api'
+
+    @action(methods=['post'], detail=False, url_path='verify', url_name='Verify anonymous user')
+    def verify(self, request):
+        try:
+            logger.info('info ne')
+            logger.error('error ne')
+            return Response()
+        except notifications_app.exceptions.InvalidChannelException as e:
+            raise e
+        except Exception as e:
+            raise e
 
     def create(self, request, format=None):
         try:
