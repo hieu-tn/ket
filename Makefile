@@ -19,5 +19,8 @@ ket.db.ssh:
 ket.lint:
 	docker exec -it ${SERVER_CONTAINER} black . -S --diff --color
 
+ket.tasks:
+	docker exec -it ${SERVER_CONTAINER} celery -A ket worker -l INFO
+
 ket.app:
 	cd ${APP_DIRECTORY} && flutter run

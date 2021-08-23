@@ -50,7 +50,6 @@ SHARED_APPS = [
 LOCAL_APPS = [
     'apps.contrib',
     'apps.users',
-    'apps.mails',
     'apps.authentication',
     'apps.notifications',
 ]
@@ -135,8 +134,8 @@ AUTH_PASSWORD_VALIDATORS = [
     #         'min_length': users_constant.PASSWORD_MIN_LENGTH,
     #     }
     # },
-    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
-    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
+    # {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
+    # {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
     # {
     #     'NAME': 'apps.users.validations.SpecialCharactersPasswordValidator',
     #     'OPTIONS': {
@@ -258,7 +257,7 @@ LOGGING = {
             'formatter': 'simple',
         },
     },
-    'root': {'level': 'DEBUG', 'handlers': ['console', 'info']},
+    'root': {'level': 'INFO', 'handlers': ['console', 'info']},
 }
 
 # django-rest-framework
@@ -315,3 +314,19 @@ SIMPLE_JWT = {
 # django-cors-headers - https://github.com/adamchainz/django-cors-headers#setup
 # CORS_URLS_REGEX = r'^/api/.*$'
 CORS_ALLOW_ALL_ORIGINS = True
+
+
+# Redis
+# REDIS_URI = os.environ.get('REDIS_URI', 'redis://redis:6379')
+# REDIS_QUEUE_NAME_PREFIX = os.environ.get('REDIS_QUEUE_NAME_PREFIX', 'ares3_redis_queue')
+
+# celery
+# -------------------------------------------------------------------------------
+# celery - https://docs.celeryproject.org/en/stable/userguide/configuration.html
+CELERY_TASK_TRACK_STARTED = True
+CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL', 'redis://redis:6379/0')
+CELERY_RESULT_BACKEND = os.environ.get('CELERY_RESULT_BACKEND', 'redis://redis:6379/0')
+
+# EXTRAS
+JWT_SIGNING_KEY_PATH = os.path.join(ROOT_DIR, '.certificates/private.pem')
+JWT_VERIFYING_KEY_PATH = os.path.join(ROOT_DIR, '.certificates/public.pem')

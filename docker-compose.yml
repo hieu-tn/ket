@@ -26,6 +26,7 @@ services:
 #    restart: always
     depends_on:
       - db
+      - redis
     networks:
       - ket_network
     volumes:
@@ -37,6 +38,14 @@ services:
     environment:
       DATABASE_HOST: db
       DATABASE_PORT: 5432
+
+  redis:
+    image: redis:6.2.4
+    container_name: ket_redis
+    networks:
+      - ket_network
+    ports:
+      - 6379:6379
 
 #  adminer:
 #    image: adminer:4

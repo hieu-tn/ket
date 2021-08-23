@@ -2,7 +2,10 @@ import logging
 from abc import abstractmethod
 from typing import Union
 
+from django.template.loader import render_to_string
+
 from . import constants as notification_constant
+from .channels import MailChannel
 from .exceptions import InvalidChannelException
 from ..users.models import User
 
@@ -44,7 +47,19 @@ class NotificationActions:
 
     def send_mail(self):
         try:
-            content = self.get_content(self.mail_template, self.prepare_mail_data())
+            data = self.prepare_mail_data()
+            logger.info('Send mail template {0} with data {1}'.format(self.mail_template, data))
+            content = self.get_content(self.mail_template, data.get('context'))
+            MailChannel().send(
+                subject=data.get('configurations').get('subject'),
+                body=content,
+                from_email=data.get('configurations').get('from_email'),
+                to=data.get('configurations').get('to'),
+                bcc=data.get('configurations').get('bcc'),
+                attachments=data.get('configurations').get('attachments'),
+                cc=data.get('configurations').get('cc'),
+                reply_to=data.get('configurations').get('reply_to'),
+            )
         except Exception as e:
             raise e
 
@@ -56,8 +71,7 @@ class NotificationActions:
 
     def get_content(self, template: str, data: dict):
         try:
-            logger.info('Get template {}'.format(template))
-            # tmpl =
+            return render_to_string(template, data)
         except Exception as e:
             raise e
 
@@ -70,33 +84,44 @@ class Notification:
         return self._user
 
     @classmethod
-    def send(cls, user: Union[User], notification: NotificationActions):
+    def send(cls, user: Union[User, dict], notification: NotificationActions):
         cls._user = cls.User(user)
         return notification
 
     class User:
-        email = None
+        mail = None
         phone = None
 
-        def __init__(self, user):
+        def __init__(self, user: Union[User, dict]):
             if isinstance(user, User):
-                self.email = user.email
+                self.mail = user.email
                 self.phone = user.phone
             else:
-                self.email = user['email']
-                self.phone = user['phone']
+                self.mail = user.get('mail')
+                self.phone = user.get('phone')
 
 
 class VerificationNotification(Notification, NotificationActions):
-    _mail_template = ''
-    _sms_template = ''
+    _mail_template = 'mails/verification.html'
+    _sms_template = 'sms/verification.txt'
     code = None
 
     def __init__(self, code=None):
         self.code = code
 
     def prepare_mail_data(self):
-        pass
+        return {
+            'context': {
+                'mail': self.user.mail,
+                'code': self.code,
+            },
+            'configurations': {
+                'subject': 'Verification code',
+                'to': [self.user.mail],
+            },
+        }
 
     def prepare_sms_data(self):
-        pass
+        return {
+            'code': self.code,
+        }

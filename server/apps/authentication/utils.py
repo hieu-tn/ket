@@ -8,7 +8,6 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 from . import constants as auth_constant
 from .models import ChallengeName
-from ..mails.services import MailService
 from ..users.models import User
 from . import constants as authentication_constant
 
@@ -30,8 +29,8 @@ def try_to_activate_unconfirmed_user(user: User):
     try:
         code, hash_code = initiate_activation_code()
 
-        mail = MailService.get_instance()
-        mail.send_signup_verification_mail(user.email, code=code)
+        # mail = MailService.get_instance()
+        # mail.send_signup_verification_mail(user.email, code=code)
 
         token = prepare_jwt_token_response(user)
     except Exception as e:

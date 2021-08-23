@@ -1,3 +1,10 @@
-from django.shortcuts import render
+from rest_framework import viewsets
+from rest_framework.response import Response
 
-# Create your views here.
+
+class NotificationsViewSet(viewsets.GenericViewSet):
+    authentication_classes = ()
+    permission_classes = ()
+
+    def list(self, request):
+        return Response()

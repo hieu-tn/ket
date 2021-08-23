@@ -14,6 +14,7 @@ RUN pip install -r requirements.txt
 
 # copy source code
 ADD ./wait-for-it.sh /wait-for-it.sh
+ADD ./server/.certificates /.certificates
 #ADD server /usr/src/app
 
 # run entrypoint.sh

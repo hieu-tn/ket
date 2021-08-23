@@ -1,9 +1,10 @@
-from enum import Enum
+from ..contrib.constants import ConstantEnum
 
 
-class Channel(Enum):
+class Channel(ConstantEnum):
     MAIL = 'MAIL'
     SMS = 'SMS'
+    DEFAULT = None
 
 
 CHANNEL = Channel
