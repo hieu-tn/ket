@@ -139,7 +139,7 @@ AUTH_PASSWORD_VALIDATORS = [
     # {
     #     'NAME': 'apps.users.validations.SpecialCharactersPasswordValidator',
     #     'OPTIONS': {
-    #         'count': 2
+    #         'count': 1
     #     }
     # },
 ]

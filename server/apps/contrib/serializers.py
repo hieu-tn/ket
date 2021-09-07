@@ -6,3 +6,6 @@ class PartialModelSerializer(serializers.ModelSerializer):
     def __init__(self, instance=None, data=empty, **kwargs):
         super().__init__(instance=instance, data=data, **kwargs)
         self.partial = True
+
+    class Meta:
+        fields = '__all__'

@@ -6,6 +6,11 @@ class UserQuerySet(models.QuerySet):
     pass
 
 
-class CustomUserManager(UserManager):
+class EndUserManager(UserManager):
     def get_queryset(self):
-        return UserQuerySet(self.model, using=self._db)
+        return UserQuerySet(self.model, using=self._db).filter(is_superuser=False)
+
+
+class AdminManager(UserManager):
+    def get_queryset(self):
+        return UserQuerySet(self.model, using=self._db).filter(is_superuser=True)

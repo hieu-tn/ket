@@ -1,5 +1,6 @@
 import logging
 
+from django.contrib.auth.models import Group
 from rest_framework import serializers
 
 from .models import User, Status
@@ -32,6 +33,10 @@ class UserSerializer(PartialModelSerializer):
         except Exception as e:
             raise e
 
-    class Meta:
+    class Meta(PartialModelSerializer.Meta):
         model = User
-        fields = '__all__'
+
+
+class GroupSerializer(PartialModelSerializer):
+    class Meta(PartialModelSerializer.Meta):
+        model = Group

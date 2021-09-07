@@ -4,10 +4,10 @@ import logging
 from django.conf import settings
 from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth.hashers import make_password
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError as DjangoValidationError
 from rest_framework import viewsets
 from rest_framework.decorators import action
-from rest_framework.exceptions import ParseError, server_error, AuthenticationFailed
+from rest_framework.exceptions import ParseError, server_error, AuthenticationFailed, ValidationError
 from rest_framework.response import Response
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
@@ -69,8 +69,10 @@ class AuthenticationViewSet(viewsets.ViewSet):
                 raise ParseError('Payload needs code, sessionToken')
             server_error(request)
         except ExpiredTokenException as e:
+            logger.error(e.__repr__())
             raise AuthenticationFailed(e)
         except InvalidTokenException as e:
+            logger.error(e.__repr__())
             raise ParseError(e)
         except Exception as e:
             logger.error(e.__repr__())
@@ -100,9 +102,9 @@ class AuthenticationViewSet(viewsets.ViewSet):
                 auth_constant.ACTIVATION_CODE_LIFETIME,
             )
             return Response(data=session_token)
-        except ValidationError as e:
+        except DjangoValidationError as e:
             logger.error(e.__repr__())
-            raise ParseError(map_validation_errors_to_list(e))
+            raise ValidationError(map_validation_errors_to_list(e))
         except Exception as e:
             logger.error(e.__repr__())
             server_error(request)

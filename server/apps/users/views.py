@@ -3,47 +3,44 @@ import logging
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.password_validation import validate_password
 from rest_framework import viewsets
-from rest_framework.exceptions import ParseError
-from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.exceptions import ParseError, server_error, ValidationError, AuthenticationFailed
 
 from .exceptions import UserExistsException
 from .models import User
 from .serializers import UserSerializer
+from ..contrib.exceptions import ExpiredTokenException, InvalidTokenException
 from ..contrib.responses import ResourceCreatedResponse
 from ..authentication.utils import try_to_activate_unconfirmed_user, make_jwt_access_token_response
 from ..authentication.models import ChallengeName
-from .utils import validate_email
+from ..contrib.services.jwt import JWTService
 
 logger = logging.getLogger(__name__)
 
 
-class UsersViewSet(viewsets.ViewSet):
+class UsersViewSet(viewsets.GenericViewSet):
     """
     User ViewSet
     """
 
-    permission_classes = ()
     authentication_classes = ()
+    permission_classes = ()
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
 
     def create(self, request, format=None):
         try:
-            username, email, password = (
-                request.data['username'],
-                request.data['email'],
-                request.data['password'],
-            )
-
+            session_token, password = request.data['session_token'], request.data['password']
+            jwt_service = JWTService().get_instance()
+            decoded = jwt_service.decode_rsa(session_token)
             validate_password(password)
-            validate_email(email)
 
-            if User.objects.filter(username=username).exists():
+            if self.get_queryset().filter(username=decoded['username']).exists():
                 raise UserExistsException()
 
-            serializer = UserSerializer(
+            serializer = self.get_serializer_class()(
                 data={
-                    'username': username,
+                    'username': decoded['username'],
                     'password': make_password(password),
-                    'email': email,
                 }
             )
             if serializer.is_valid(raise_exception=True):
@@ -52,11 +49,21 @@ class UsersViewSet(viewsets.ViewSet):
             hash_code = try_to_activate_unconfirmed_user(serializer.instance)
             token = make_jwt_access_token_response(serializer.instance)
         except KeyError as e:
-            if e.__str__().translate(str.maketrans('', '', '\'')) in ['username', 'email', 'password']:
-                ParseError()
-            raise e
+            logger.error(e.__repr__())
+            if e.__str__().translate(str.maketrans('', '', '\'')) in ['session_token', 'password']:
+                raise ParseError('Payload needs sessionToken, password')
+            elif e.__str__().translate(str.maketrans('', '', '\'')) in ['username']:
+                raise ValidationError('Invalid sessionToken')
+            server_error(request)
+        except ExpiredTokenException as e:
+            logger.error(e.__repr__())
+            raise AuthenticationFailed(e)
+        except InvalidTokenException as e:
+            logger.error(e.__repr__())
+            raise ValidationError(e)
         except Exception as e:
-            raise e
+            logger.error(e.__repr__())
+            server_error(request)
         else:
             return ResourceCreatedResponse(
                 {'challenge': ChallengeName.ACTIVATION_CODE_VERIFIER, 'hash_code': hash_code, **token}
