@@ -19,7 +19,7 @@ def send_mail(
     reply_to: Union[list, tuple, None],
 ):
     try:
-        logger.info('Sending mail {0} to {1}'.format(subject, to))
+        logger.info('Sending email {0} to {1}'.format(subject, to))
         email = EmailMessage(
             subject=subject,
             body=body,
@@ -32,5 +32,13 @@ def send_mail(
         )
         email.content_subtype = 'html'
         email.send()
+    except Exception as e:
+        raise e
+
+
+@shared_task
+def send_sms(subject: str, body: str, to: str):
+    try:
+        logger.info('Sending sms {0} to {1}'.format(subject, to))
     except Exception as e:
         raise e

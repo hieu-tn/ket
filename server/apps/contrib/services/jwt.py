@@ -4,6 +4,10 @@ import jwt
 from cryptography.hazmat.primitives import serialization
 from django.conf import settings
 
+from ..exceptions import ExpiredTokenException, InvalidTokenException
+
+logger = logging.getLogger(__name__)
+
 
 class JWTService:
     __instance = None
@@ -39,5 +43,9 @@ class JWTService:
     def decode_rsa(self, encoded: str):
         try:
             return jwt.decode(encoded, self._public_key, algorithms=[self._rsa_algorithm])
+        except jwt.exceptions.ExpiredSignatureError as e:
+            logger.error(e.__repr__())
+            raise ExpiredTokenException(e)
         except Exception as e:
-            raise e
+            logger.error(e.__repr__())
+            raise InvalidTokenException(e)

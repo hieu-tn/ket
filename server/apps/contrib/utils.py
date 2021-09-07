@@ -1,4 +1,7 @@
+import logging
 import re
+
+logger = logging.getLogger(__name__)
 
 
 def camel_to_snake(name):
@@ -25,3 +28,7 @@ def convert_json(d, convert):
     for k, v in d.items():
         new_d[convert(k)] = convert_json(v, convert) if isinstance(v, dict) else v
     return new_d
+
+
+def map_validation_errors_to_list(error_dict: dict):
+    return [{'code': e.code, 'detail': e.message} for e in error_dict.error_list]

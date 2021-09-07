@@ -8,10 +8,20 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 from . import constants as auth_constant
 from .models import ChallengeName
+from ..contrib.services.jwt import JWTService
 from ..users.models import User
 from . import constants as authentication_constant
 
 logger = logging.getLogger(__name__)
+
+
+def make_jwt_session_token(payload: dict, expires_in: int):
+    try:
+        jwt_service = JWTService.get_instance()
+        session_token = jwt_service.encode_rsa(payload)
+        return {'session_token': session_token, 'expires_in': expires_in}
+    except Exception as e:
+        raise e
 
 
 def initiate_activation_code():
@@ -32,7 +42,7 @@ def try_to_activate_unconfirmed_user(user: User):
         # mail = MailService.get_instance()
         # mail.send_signup_verification_mail(user.email, code=code)
 
-        token = prepare_jwt_token_response(user)
+        token = make_jwt_access_token_response(user)
     except Exception as e:
         raise e
     else:
@@ -41,7 +51,7 @@ def try_to_activate_unconfirmed_user(user: User):
         )
 
 
-def prepare_jwt_token_response(user: User):
+def make_jwt_access_token_response(user: User):
     try:
         refresh = RefreshToken.for_user(user)
     except Exception as e:

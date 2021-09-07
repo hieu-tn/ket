@@ -11,7 +11,6 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 '''
 import datetime
 import os
-from datetime import timedelta
 from pathlib import Path
 
 from apps.authentication import constants as auth_constant
@@ -45,6 +44,7 @@ SHARED_APPS = [
     'django.forms',
     'corsheaders',
     'rest_framework',
+    'drf_yasg',
 ]
 
 LOCAL_APPS = [
@@ -315,7 +315,6 @@ SIMPLE_JWT = {
 # CORS_URLS_REGEX = r'^/api/.*$'
 CORS_ALLOW_ALL_ORIGINS = True
 
-
 # Redis
 # REDIS_URI = os.environ.get('REDIS_URI', 'redis://redis:6379')
 # REDIS_QUEUE_NAME_PREFIX = os.environ.get('REDIS_QUEUE_NAME_PREFIX', 'ares3_redis_queue')
@@ -326,6 +325,17 @@ CORS_ALLOW_ALL_ORIGINS = True
 CELERY_TASK_TRACK_STARTED = True
 CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL', 'redis://redis:6379/0')
 CELERY_RESULT_BACKEND = os.environ.get('CELERY_RESULT_BACKEND', 'redis://redis:6379/0')
+
+# Swagger
+# -------------------------------------------------------------------------------
+# Swagger - https://drf-yasg.readthedocs.io/en/stable/settings.html
+SWAGGER_SETTINGS = {
+    'SECURITY_DEFINITIONS': {'basic': {'type': 'basic'}},
+}
+
+REDOC_SETTINGS = {
+    'LAZY_RENDERING': False,
+}
 
 # EXTRAS
 JWT_SIGNING_KEY_PATH = os.path.join(ROOT_DIR, '.certificates/private.pem')

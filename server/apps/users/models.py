@@ -2,18 +2,13 @@ import logging
 import uuid
 
 from django.contrib.auth.models import AbstractUser
-from django.core.validators import RegexValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from .managers import CustomUserManager
+from . import constants as users_constant
 
 logger = logging.getLogger(__name__)
-
-phone_regex = RegexValidator(
-    regex=r'^\+?1?\d{9,15}$',
-    message='Phone number must be entered in the format: "+999999999". Up to 15 digits allowed.',
-)
 
 
 class Status(models.TextChoices):
@@ -29,4 +24,5 @@ class User(AbstractUser):
     uuid = models.UUIDField(unique=True, default=uuid.uuid4, editable=False)
     status = models.CharField(max_length=40, choices=Status.choices, default=Status.UNCONFIRMED, null=True, blank=True)
     email = models.EmailField(_('email address'), blank=True, unique=True)
-    phone = models.CharField(validators=[phone_regex], max_length=17, blank=True, unique=True)
+    phone = models.CharField(validators=[users_constant.PHONE_REGEX], max_length=17, blank=True, unique=True)
+    attributes = models.JSONField(null=True, blank=True)

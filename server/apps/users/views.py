@@ -10,7 +10,7 @@ from .exceptions import UserExistsException
 from .models import User
 from .serializers import UserSerializer
 from ..contrib.responses import ResourceCreatedResponse
-from ..authentication.utils import try_to_activate_unconfirmed_user, prepare_jwt_token_response
+from ..authentication.utils import try_to_activate_unconfirmed_user, make_jwt_access_token_response
 from ..authentication.models import ChallengeName
 from .utils import validate_email
 
@@ -28,9 +28,9 @@ class UsersViewSet(viewsets.ViewSet):
     def create(self, request, format=None):
         try:
             username, email, password = (
-                getattr(request, 'data').get('username'),
-                getattr(request, 'data').get('email'),
-                getattr(request, 'data').get('password'),
+                request.data['username'],
+                request.data['email'],
+                request.data['password'],
             )
 
             validate_password(password)
@@ -50,7 +50,7 @@ class UsersViewSet(viewsets.ViewSet):
                 serializer.save()
 
             hash_code = try_to_activate_unconfirmed_user(serializer.instance)
-            token = prepare_jwt_token_response(serializer.instance)
+            token = make_jwt_access_token_response(serializer.instance)
         except KeyError as e:
             if e.__str__().translate(str.maketrans('', '', '\'')) in ['username', 'email', 'password']:
                 ParseError()

@@ -5,7 +5,7 @@ from typing import Union
 from django.template.loader import render_to_string
 
 from . import constants as notification_constant
-from .channels import MailChannel
+from .channels import MailChannel, SmsChannel
 from .exceptions import InvalidChannelException
 from ..users.models import User
 
@@ -65,7 +65,14 @@ class NotificationActions:
 
     def send_sms(self):
         try:
-            pass
+            data = self.prepare_sms_data()
+            logger.info('Send sms template {0} with data {1}'.format(self.sms_template, data))
+            content = self.get_content(self.sms_template, data.get('context'))
+            SmsChannel().send(
+                subject=data.get('configurations').get('subject'),
+                body=content,
+                to=data.get('configurations').get('to'),
+            )
         except Exception as e:
             raise e
 
@@ -89,15 +96,15 @@ class Notification:
         return notification
 
     class User:
-        mail = None
+        email = None
         phone = None
 
         def __init__(self, user: Union[User, dict]):
             if isinstance(user, User):
-                self.mail = user.email
+                self.email = user.email
                 self.phone = user.phone
             else:
-                self.mail = user.get('mail')
+                self.email = user.get('email')
                 self.phone = user.get('phone')
 
 
@@ -112,16 +119,22 @@ class VerificationNotification(Notification, NotificationActions):
     def prepare_mail_data(self):
         return {
             'context': {
-                'mail': self.user.mail,
+                'email': self.user.email,
                 'code': self.code,
             },
             'configurations': {
                 'subject': 'Verification code',
-                'to': [self.user.mail],
+                'to': [self.user.email],
             },
         }
 
     def prepare_sms_data(self):
         return {
-            'code': self.code,
+            'configurations': {
+                'subject': 'Verification code',
+                'to': self.user.phone,
+            },
+            'context': {
+                'code': self.code,
+            },
         }
