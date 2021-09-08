@@ -1,6 +1,5 @@
 import logging
 
-from django.contrib.auth.models import Group
 from rest_framework import serializers
 
 from .models import User, Status
@@ -10,6 +9,11 @@ logger = logging.getLogger(__name__)
 
 
 class UserSerializer(PartialModelSerializer):
+    user_groups = serializers.SerializerMethodField()
+
+    def get_user_groups(self, obj):
+        return [g.name for g in obj.groups.all()]
+
     def confirm(self):
         try:
             if self.instance.status not in [Status.UNCONFIRMED, Status.ARCHIVED]:
@@ -35,8 +39,4 @@ class UserSerializer(PartialModelSerializer):
 
     class Meta(PartialModelSerializer.Meta):
         model = User
-
-
-class GroupSerializer(PartialModelSerializer):
-    class Meta(PartialModelSerializer.Meta):
-        model = Group
+        fields = '__all__'

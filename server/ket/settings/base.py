@@ -286,6 +286,12 @@ REST_FRAMEWORK = {
 # djangorestframework-simplejwt
 # -------------------------------------------------------------------------------
 # https://django-rest-framework-simplejwt.readthedocs.io/en/latest/settings.html
+JWT_SIGNING_KEY_PATH = os.path.join(ROOT_DIR, '.certificates/private.pem')
+JWT_VERIFYING_KEY_PATH = os.path.join(ROOT_DIR, '.certificates/public.pem')
+f = open(JWT_SIGNING_KEY_PATH, 'rb')
+JWT_SIGNING_KEY = f.read()
+f = open(JWT_VERIFYING_KEY_PATH, 'rb')
+JWT_VERIFYING_KEY = f.read()
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': datetime.timedelta(seconds=auth_constant.ACCESS_TOKEN_LIFETIME),
     'REFRESH_TOKEN_LIFETIME': datetime.timedelta(seconds=auth_constant.REFRESH_TOKEN_LIFETIME),
@@ -293,13 +299,13 @@ SIMPLE_JWT = {
     'BLACKLIST_AFTER_ROTATION': True,
     'UPDATE_LAST_LOGIN': False,
     'ALGORITHM': 'RS256',
-    'SIGNING_KEY': os.environ.get('JWT_SIGNING_KEY', 'JWT_SIGNING_KEY'),
-    'VERIFYING_KEY': os.environ.get('JWT_VERIFYING_KEY', 'JWT_VERIFYING_KEY'),
+    'SIGNING_KEY': JWT_SIGNING_KEY,
+    'VERIFYING_KEY': JWT_VERIFYING_KEY,
     'AUDIENCE': None,
     'ISSUER': None,
     'AUTH_HEADER_TYPES': ('Bearer',),
     'AUTH_HEADER_NAME': 'HTTP_AUTHORIZATION',
-    'USER_ID_FIELD': 'uuid',
+    'USER_ID_FIELD': 'user_uuid',
     'USER_ID_CLAIM': 'user_uuid',
     # 'USER_AUTHENTICATION_RULE': 'rest_framework_simplejwt.authentication.default_user_authentication_rule',
     'USER_AUTHENTICATION_RULE': None,
@@ -336,7 +342,3 @@ SWAGGER_SETTINGS = {
 REDOC_SETTINGS = {
     'LAZY_RENDERING': False,
 }
-
-# EXTRAS
-JWT_SIGNING_KEY_PATH = os.path.join(ROOT_DIR, '.certificates/private.pem')
-JWT_VERIFYING_KEY_PATH = os.path.join(ROOT_DIR, '.certificates/public.pem')

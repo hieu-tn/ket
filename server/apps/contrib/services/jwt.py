@@ -22,10 +22,10 @@ class JWTService:
             raise Exception('This class {} is a singleton!'.format('JWTService'))
 
         JWTService.__instance = self
-        f = open(settings.JWT_SIGNING_KEY_PATH, 'rb')
-        JWTService.__instance._secret_key = serialization.load_pem_private_key(data=f.read(), password=None)
-        f = open(settings.JWT_VERIFYING_KEY_PATH, 'rb')
-        JWTService.__instance._public_key = serialization.load_pem_public_key(data=f.read())
+        JWTService.__instance._secret_key = serialization.load_pem_private_key(
+            data=settings.JWT_SIGNING_KEY, password=None
+        )
+        JWTService.__instance._public_key = serialization.load_pem_public_key(data=settings.JWT_VERIFYING_KEY)
 
     @staticmethod
     def get_instance():
@@ -47,5 +47,4 @@ class JWTService:
             logger.error(e.__repr__())
             raise ExpiredTokenException(e)
         except Exception as e:
-            logger.error(e.__repr__())
             raise InvalidTokenException(e)

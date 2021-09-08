@@ -54,14 +54,12 @@ def try_to_activate_unconfirmed_user(user: User):
 def make_jwt_access_token_response(user: User):
     try:
         refresh = RefreshToken.for_user(user)
-    except Exception as e:
-        raise e
-    else:
         return {
-            'access': str(refresh.access_token),
-            'refresh': str(refresh),
+            'access_token': str(refresh.access_token),
             'expires_in': authentication_constant.ACCESS_TOKEN_LIFETIME,
         }
+    except Exception as e:
+        raise e
 
 
 def prepare_challenge_response_data(challenge_name: str = None, **kwargs):

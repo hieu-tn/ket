@@ -2,7 +2,6 @@ from ..contrib import constants as contrib_constant
 
 
 class AuthType(contrib_constant.ConstantEnum):
-    DEFAULT = None
     SMS = 'SMS'
     MAIL = 'MAIL'
 

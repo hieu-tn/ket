@@ -8,4 +8,4 @@ class PartialModelSerializer(serializers.ModelSerializer):
         self.partial = True
 
     class Meta:
-        fields = '__all__'
+        pass

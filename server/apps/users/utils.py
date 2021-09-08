@@ -3,8 +3,20 @@ import logging
 from django.core.exceptions import ValidationError
 
 from .validations import RegexEmailValidator, RegexPhoneValidator
+from ..authentication import constants as auth_constant
 
 logger = logging.getLogger(__name__)
+
+
+def make_signup_extras(decoded: dict):
+    try:
+        extras = {
+            auth_constant.AUTH_TYPE.SMS.value: {'phone': decoded['username']},
+            auth_constant.AUTH_TYPE.MAIL.value: {'email': decoded['username']},
+        }.get(decoded['auth_type'], {})
+        return extras
+    except Exception as e:
+        raise e
 
 
 def validate_field(value: str, user=None, validators=None):

@@ -1,4 +1,4 @@
-FROM python:3.9.5 as server
+FROM python:3.9.7 as server
 
 WORKDIR /usr/src/app
 

@@ -58,7 +58,7 @@ class AuthenticationViewSet(viewsets.ViewSet):
             session_token = make_jwt_session_token(
                 {
                     **decoded,
-                    'exp': auth_constant.SIGNUP_TOKEN_LIFETIME,
+                    'exp': datetime.datetime.now() + datetime.timedelta(seconds=auth_constant.SIGNUP_TOKEN_LIFETIME),
                 },
                 auth_constant.SIGNUP_TOKEN_LIFETIME,
             )
@@ -67,7 +67,7 @@ class AuthenticationViewSet(viewsets.ViewSet):
             logger.error(e.__repr__())
             if e.__str__().replace('\'', '') in ['code', 'session_token']:
                 raise ParseError('Payload needs code, sessionToken')
-            server_error(request)
+            return server_error(request)
         except ExpiredTokenException as e:
             logger.error(e.__repr__())
             raise AuthenticationFailed(e)
@@ -97,6 +97,7 @@ class AuthenticationViewSet(viewsets.ViewSet):
                 {
                     'hash_code': hash_code,
                     'username': target,
+                    'auth_type': auth_type,
                     'exp': datetime.datetime.now() + datetime.timedelta(seconds=auth_constant.ACTIVATION_CODE_LIFETIME),
                 },
                 auth_constant.ACTIVATION_CODE_LIFETIME,
@@ -107,7 +108,7 @@ class AuthenticationViewSet(viewsets.ViewSet):
             raise ValidationError(map_validation_errors_to_list(e))
         except Exception as e:
             logger.error(e.__repr__())
-            server_error(request)
+            raise e
 
     def create(self, request, format=None):
         try:
@@ -152,7 +153,7 @@ class AuthenticationViewSet(viewsets.ViewSet):
         except KeyError as e:
             if e.__str__().translate(str.maketrans('', '', '\'')) in ['username']:
                 raise ParseError()
-            server_error(request)
+            return server_error(request)
         except User.DoesNotExist as e:
             raise UserDoesNotExistException()
         except Exception as e:
@@ -175,7 +176,7 @@ class AuthenticationViewSet(viewsets.ViewSet):
             raise ParseError()
         except TypeError as e:
             logger.error(e)
-            server_error(request)
+            return server_error(request)
         except AttributeError as e:
             logger.error(e)
             raise ParseError()

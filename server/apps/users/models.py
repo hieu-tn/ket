@@ -24,8 +24,8 @@ class User(AbstractUser):
 
     REQUIRED_FIELDS = []
 
-    uuid = models.UUIDField(unique=True, default=uuid.uuid4, editable=False)
-    status = models.CharField(max_length=40, choices=Status.choices, default=Status.UNCONFIRMED, null=True, blank=True)
-    email = models.EmailField(_('email address'), null=True, blank=True)
+    user_uuid = models.UUIDField(unique=True, default=uuid.uuid4, editable=False, db_column='uuid', db_index=True)
+    status = models.CharField(max_length=40, choices=Status.choices, default=Status.CONFIRMED, null=True, blank=True)
+    email = models.EmailField(_('email address'), validators=[users_constant.EMAIL_REGEX], null=True, blank=True)
     phone = models.CharField(validators=[users_constant.PHONE_REGEX], max_length=17, null=True, blank=True)
     attributes = models.JSONField(null=True, blank=True)

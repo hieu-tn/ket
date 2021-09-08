@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Abort on any error (including if wait-for-it fails).
 set -e
@@ -9,10 +9,17 @@ if [ -n "$DATABASE_HOST" ]; then
 fi
 
 echo "Database migrations"
+python manage.py makemigrations users
 python manage.py makemigrations
 python manage.py migrate
 
-#python manage.py runserver 0:8000 --settings=ket.settings.development
+
+declare -a commands=("create_user_group")
+# now loop through the above array
+for cmd in "${commands[@]}"; do
+  python manage.py "${cmd}"
+done
+
 
 # Run the main container command.
 exec "$@"
