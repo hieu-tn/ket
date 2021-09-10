@@ -1,4 +1,3 @@
-import datetime
 import logging
 
 from django.conf import settings
@@ -12,14 +11,13 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from .challenges import ChallengeSwitcher
-from .utils import initiate_activation_code, make_jwt_session_token
+from .tokens import make_jwt_untyped_token, decode_jwt_untyped_token
+from .utils import initiate_activation_code
 from ..contrib.exceptions import ExpiredTokenException, InvalidTokenException
-from ..contrib.responses import ResourceCreatedResponse
-from ..contrib.services.jwt import JWTService
 from ..contrib.utils import map_validation_errors_to_list
 from ..notifications.services import Notification, VerificationNotification
 from ..users.exceptions import UserDoesNotExistException
-from ..users.models import User, Status
+from ..users.models import User
 from ..users.serializers import UserSerializer
 from ..users import constants as users_constant
 from ..notifications import constants as notifications_constant
@@ -36,6 +34,26 @@ class AuthenticationViewSet(viewsets.ViewSet):
 
     www_authenticate_realm = 'api'
 
+    def create(self, request, format=None):
+        try:
+            username, password = request.data['username'], request.data['password']
+            auth = ModelBackend()
+            user = auth.authenticate(request, username, password)
+
+            if user is None:
+                raise UserDoesNotExistException()
+
+            resp = ChallengeSwitcher.process(user=user)
+        except KeyError as e:
+            logger.error(e.__repr__())
+            if e.__str__().translate(str.maketrans('', '', '\'')) in ['username', 'password']:
+                raise ParseError('Payload needs username, password')
+            return server_error(request)
+        except Exception as e:
+            raise e
+        else:
+            return Response(resp)
+
     @action(methods=['post', 'get'], detail=False, url_path='verification', url_name='Verify anonymous user')
     def verification(self, request):
         try:
@@ -48,24 +66,17 @@ class AuthenticationViewSet(viewsets.ViewSet):
 
     def _post_verification(self, request):
         try:
-            code, session_token = request.data['code'], request.data['session_token']
-            jwt_service = JWTService.get_instance()
-            decoded = jwt_service.decode_rsa(session_token)
+            code, untyped_token = request.data['code'], request.data['untyped_token']
+            decoded, _ = decode_jwt_untyped_token(untyped_token)
             if make_password(str(code), settings.SECRET_KEY) != decoded['hash_code']:
                 raise ParseError('Invalid code')
 
             decoded.pop('hash_code', None)
-            session_token = make_jwt_session_token(
-                {
-                    **decoded,
-                    'exp': datetime.datetime.now() + datetime.timedelta(seconds=auth_constant.SIGNUP_TOKEN_LIFETIME),
-                },
-                auth_constant.SIGNUP_TOKEN_LIFETIME,
-            )
-            return Response(data=session_token)
+            untyped_token = make_jwt_untyped_token(payload=decoded)
+            return Response(data=untyped_token)
         except KeyError as e:
             logger.error(e.__repr__())
-            if e.__str__().replace('\'', '') in ['code', 'session_token']:
+            if e.__str__().translate(str.maketrans('', '', '\'')) in ['code', 'untyped_token']:
                 raise ParseError('Payload needs code, sessionToken')
             return server_error(request)
         except ExpiredTokenException as e:
@@ -93,48 +104,20 @@ class AuthenticationViewSet(viewsets.ViewSet):
 
             code, hash_code = initiate_activation_code()
             Notification.send(user, VerificationNotification(code)).via(notifications_constant.CHANNEL(auth_type))
-            session_token = make_jwt_session_token(
+            untyped_token = make_jwt_untyped_token(
                 {
                     'hash_code': hash_code,
                     'username': target,
                     'auth_type': auth_type,
-                    'exp': datetime.datetime.now() + datetime.timedelta(seconds=auth_constant.ACTIVATION_CODE_LIFETIME),
-                },
-                auth_constant.ACTIVATION_CODE_LIFETIME,
+                }
             )
-            return Response(data=session_token)
+            return Response(data=untyped_token)
         except DjangoValidationError as e:
             logger.error(e.__repr__())
             raise ValidationError(map_validation_errors_to_list(e))
         except Exception as e:
             logger.error(e.__repr__())
             raise e
-
-    def create(self, request, format=None):
-        try:
-            username, password = (
-                getattr(request, 'data').get('username'),
-                getattr(request, 'data').get('password'),
-            )
-            auth = ModelBackend()
-            user = auth.authenticate(request, username, password)
-            if user is None:
-                raise UserDoesNotExistException()
-
-            resp = ChallengeSwitcher.process(user=user)
-        except KeyError as e:
-            logger.info(e)
-            raise ParseError()
-        except TypeError as e:
-            logger.info(e)
-            raise InternalServerError()
-        except AttributeError as e:
-            logger.info(e)
-            raise ParseError()
-        except Exception as e:
-            raise e
-        else:
-            return Response(resp)
 
     @action(methods=['post'], detail=False, url_path='forgot-password', url_name='Forgot Password')
     def forgot_password(self, request, format=None):

@@ -1,11 +1,12 @@
 import logging
 
-from rest_framework.exceptions import ParseError
-from rest_framework.response import Response
-from rest_framework_simplejwt.tokens import RefreshToken
+from django.conf import settings
+from django.contrib.auth.hashers import make_password
 
+from . import constants as auth_constant
+from .tokens import make_jwt_session_token, make_jwt_access_token
 from ..users.exceptions import UserHasNotConfirmedException, UserHasBeenArchivedException
-from ..users.models import Status
+from ..users.models import User
 from .responses import ChallengeResponse
 
 logger = logging.getLogger(__name__)
@@ -17,43 +18,36 @@ class ChallengeSwitcher:
     """
 
     @classmethod
-    def process_challenge(cls, *args, **kwargs):
+    def process(cls, user: User, *args, **kwargs):
         try:
-            challenge_name = kwargs.get('user').status.lower()
+            challenge_name = user.status.lower()
             method_name = '_process_challenge_' + challenge_name
             method = getattr(cls, method_name, lambda: 'Invalid challenge name')
-            return method(cls, *args, **kwargs)
+            return method(cls, user, *args, **kwargs)
         except Exception as e:
             raise e
 
-    def _process_challenge_force_change_password(self, *args, **kwargs):
+    def _process_challenge_force_change_password(self, user: User, *args, **kwargs):
         try:
-            user = kwargs.get('user')
-            refresh = RefreshToken.for_user(user)
+            token = make_jwt_session_token(payload={
+                'user_uuid': str(user.user_uuid),
+                'hash_user_uuid': make_password(str(user.user_uuid), settings.SECRET_KEY)
+            }, expires_in=auth_constant.SESSION_TOKEN_LIFETIME)
         except Exception as e:
             raise e
         else:
             return ChallengeResponse(
-                name=Status.FORCE_CHANGE_PASSWORD,
-                data={
-                    'refresh': str(refresh),
-                    'access': str(refresh.access_token),
-                },
+                name=auth_constant.CHALLENGE_NAME.NEW_PASSWORD_REQUIRED,
+                data={'user_uuid': user.user_uuid, **token},
             )
 
-    def _process_challenge_confirmed(self, *args, **kwargs):
+    def _process_challenge_confirmed(self, user: User, *args, **kwargs):
         try:
-            user = kwargs.get('user')
-            refresh = RefreshToken.for_user(user)
+            token = make_jwt_access_token(user)
         except Exception as e:
             raise e
         else:
-            return ChallengeResponse(
-                data={
-                    'refresh': str(refresh),
-                    'access': str(refresh.access_token),
-                },
-            )
+            return ChallengeResponse(data={'user_uuid': user.user_uuid, **token})()
 
     def _process_challenge_archived(self, *args, **kwargs):
         raise UserHasBeenArchivedException()

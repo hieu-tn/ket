@@ -12,13 +12,12 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from . import constants as users_constant
 from .exceptions import UserExistsException
 from .models import User
-from .permissions import UserAccessOneOwnResourcePermission
+from .permissions import UserAccessOneOwnRecordPermission, IsUserConfirmed
 from .serializers import UserSerializer
 from .utils import make_signup_extras
-from ..authentication.utils import make_jwt_access_token_response
+from ..authentication.tokens import decode_jwt_untyped_token
 from ..contrib.exceptions import ExpiredTokenException, InvalidTokenException
 from ..contrib.responses import ResourceCreatedResponse
-from ..contrib.services.jwt import JWTService
 from ..contrib.utils import map_validation_errors_to_list
 
 logger = logging.getLogger(__name__)
@@ -50,14 +49,13 @@ class UsersViewSet(viewsets.GenericViewSet):
         """
         permission_classes = self.permission_classes
         if self.detail:
-            permission_classes = [UserAccessOneOwnResourcePermission]
+            permission_classes.extend([UserAccessOneOwnRecordPermission, IsUserConfirmed])
         return [permission() for permission in permission_classes]
 
     def create(self, request):
         try:
-            session_token, password = request.data['session_token'], request.data['password']
-            jwt_service = JWTService.get_instance()
-            decoded = jwt_service.decode_rsa(session_token)
+            untyped_token, password = request.data['untyped_token'], request.data['password']
+            decoded, _ = decode_jwt_untyped_token(untyped_token)
             validate_password(password)
 
             if self.get_queryset().filter(username=decoded['username']).exists():
@@ -77,10 +75,10 @@ class UsersViewSet(viewsets.GenericViewSet):
                 serializer.save()
         except KeyError as e:
             logger.error(e.__repr__())
-            if e.__str__().translate(str.maketrans('', '', '\'')) in ['session_token', 'password']:
-                raise ParseError('Payload needs sessionToken, password')
+            if e.__str__().translate(str.maketrans('', '', '\'')) in ['untyped_token', 'password']:
+                raise ParseError('Payload needs untypedToken, password')
             elif e.__str__().translate(str.maketrans('', '', '\'')) in ['username']:
-                raise ValidationError('Invalid sessionToken')
+                raise ValidationError('Invalid untypedToken')
             return server_error(request)
         except ExpiredTokenException as e:
             logger.error(e.__repr__())
