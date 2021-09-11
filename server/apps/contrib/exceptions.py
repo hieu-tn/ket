@@ -4,9 +4,5 @@ from rest_framework import status
 from rest_framework.exceptions import APIException
 
 
-class ExpiredTokenException(Exception):
-    pass
-
-
-class InvalidTokenException(Exception):
+class InternalError(Exception):
     pass

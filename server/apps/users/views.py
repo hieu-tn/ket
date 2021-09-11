@@ -5,7 +5,7 @@ from django.contrib.auth.models import Group
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError as DjangoValidationError
 from rest_framework import viewsets
-from rest_framework.exceptions import ParseError, server_error, ValidationError, AuthenticationFailed
+from rest_framework.exceptions import ParseError, server_error, ValidationError
 from rest_framework.response import Response
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
@@ -15,8 +15,7 @@ from .models import User
 from .permissions import UserAccessOneOwnRecordPermission, IsUserConfirmed
 from .serializers import UserSerializer
 from .utils import make_signup_extras
-from ..authentication.tokens import decode_jwt_untyped_token
-from ..contrib.exceptions import ExpiredTokenException, InvalidTokenException
+from ..authentication.tokens import decode_jwt_session_token
 from ..contrib.responses import ResourceCreatedResponse
 from ..contrib.utils import map_validation_errors_to_list
 
@@ -54,8 +53,8 @@ class UsersViewSet(viewsets.GenericViewSet):
 
     def create(self, request):
         try:
-            untyped_token, password = request.data['untyped_token'], request.data['password']
-            decoded, _ = decode_jwt_untyped_token(untyped_token)
+            session_token, password = request.data['session_token'], request.data['password']
+            decoded, _ = decode_jwt_session_token(session_token)
             validate_password(password)
 
             if self.get_queryset().filter(username=decoded['username']).exists():
@@ -75,17 +74,11 @@ class UsersViewSet(viewsets.GenericViewSet):
                 serializer.save()
         except KeyError as e:
             logger.error(e.__repr__())
-            if e.__str__().translate(str.maketrans('', '', '\'')) in ['untyped_token', 'password']:
+            if e.__str__().translate(str.maketrans('', '', '\'')) in ['session_token', 'password']:
                 raise ParseError('Payload needs untypedToken, password')
             elif e.__str__().translate(str.maketrans('', '', '\'')) in ['username']:
                 raise ValidationError('Invalid untypedToken')
             return server_error(request)
-        except ExpiredTokenException as e:
-            logger.error(e.__repr__())
-            raise AuthenticationFailed(e)
-        except InvalidTokenException as e:
-            logger.error(e.__repr__())
-            raise ValidationError(e)
         except DjangoValidationError as e:
             logger.error(e.__repr__())
             raise ValidationError(map_validation_errors_to_list(e))

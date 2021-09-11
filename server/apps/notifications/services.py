@@ -111,16 +111,16 @@ class Notification:
 class VerificationNotification(Notification, NotificationActions):
     _mail_template = 'mails/verification.html'
     _sms_template = 'sms/verification.txt'
-    code = None
+    __code = None
 
     def __init__(self, code=None):
-        self.code = code
+        self.__code = code
 
     def prepare_mail_data(self):
         return {
             'context': {
                 'email': self.user.email,
-                'code': self.code,
+                'code': self.__code,
             },
             'configurations': {
                 'subject': 'Verification code',
@@ -135,6 +135,38 @@ class VerificationNotification(Notification, NotificationActions):
                 'to': self.user.phone,
             },
             'context': {
-                'code': self.code,
+                'code': self.__code,
+            },
+        }
+
+
+class ForgotPasswordNotification(Notification, NotificationActions):
+    _mail_template = 'mails/forgot_password.html'
+    _sms_template = 'sms/forgot_password.txt'
+    __password = None
+
+    def __init__(self, password=None):
+        self.__password = password
+
+    def prepare_mail_data(self):
+        return {
+            'context': {
+                'email': self.user.email,
+                'password': self.__password,
+            },
+            'configurations': {
+                'subject': 'New password',
+                'to': [self.user.email],
+            },
+        }
+
+    def prepare_sms_data(self):
+        return {
+            'configurations': {
+                'subject': 'New password',
+                'to': self.user.phone,
+            },
+            'context': {
+                'password': self.__password,
             },
         }
