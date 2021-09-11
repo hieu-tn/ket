@@ -2,6 +2,7 @@ import logging
 
 from django.conf import settings
 from django.contrib.auth.hashers import make_password
+from django.contrib.auth.models import update_last_login
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError as DjangoValidationError, PermissionDenied as DjangoPermissionDenied
 
@@ -52,6 +53,7 @@ class ChallengeSwitcher:
     def _process_confirmed(self, user: User, *args, **kwargs):
         try:
             token = make_jwt_access_token(user)
+            update_last_login(None, user)
         except Exception as e:
             raise e
         else:
