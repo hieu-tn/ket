@@ -37,13 +37,12 @@ class AuthenticationViewSet(viewsets.ViewSet):
     def create(self, request):
         try:
             username, password = request.data['username'], request.data['password']
-            auth = ModelBackend()
-            user = auth.authenticate(request, username, password)
+            authenticated_user = ModelBackend().authenticate(request, username, password)
 
-            if user is None:
+            if not authenticated_user:
                 raise UserDoesNotExistException()
 
-            resp = ChallengeSwitcher.process(user=user)
+            resp = ChallengeSwitcher.process(user=authenticated_user)
         except KeyError as e:
             logger.error(e.__repr__())
             if e.__str__().translate(str.maketrans('', '', '\'')) in ['username', 'password']:

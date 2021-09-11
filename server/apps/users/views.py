@@ -1,11 +1,14 @@
 import logging
 
+from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import Group
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError as DjangoValidationError
 from rest_framework import viewsets
+from rest_framework.decorators import action
 from rest_framework.exceptions import ParseError, server_error, ValidationError
+from rest_framework.permissions import IsAuthenticated, DjangoModelPermissions
 from rest_framework.response import Response
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
@@ -48,8 +51,35 @@ class UsersViewSet(viewsets.GenericViewSet):
         """
         permission_classes = self.permission_classes
         if self.detail:
-            permission_classes.extend([UserAccessOneOwnRecordPermission, IsUserConfirmed])
+            permission_classes.extend(
+                [IsAuthenticated, DjangoModelPermissions, UserAccessOneOwnRecordPermission, IsUserConfirmed]
+            )
         return [permission() for permission in permission_classes]
+
+    @action(methods=['post'], detail=True, url_path='change-password', url_name='Change Password')
+    def change_password(self, request, user_uuid=None):
+        try:
+            password, new_password = request.data['password'], request.data['new_password']
+            user = request.user
+            if not user.check_password(password):
+                raise ValidationError('invalid password')
+            validate_password(new_password)
+
+            user.set_password(new_password)
+            user.save()
+        except KeyError as e:
+            logger.error(e.__repr__())
+            if e.__str__().translate(str.maketrans('', '', '\'')) in ['password', 'new_password']:
+                raise ParseError('Payload needs password, newPassword')
+            return server_error(request)
+        except DjangoValidationError as e:
+            logger.error(e.__repr__())
+            raise ValidationError(map_validation_errors_to_list(e))
+        except Exception as e:
+            logger.error(e.__repr__())
+            raise e
+        else:
+            return Response()
 
     def create(self, request):
         try:

@@ -11,12 +11,12 @@
 * forgot password
     * send new password by sms/email (prefer sms)
     * change password once login
+* change password
 
 #### TODO ####
 - mfa???
 - sms service
     - SNS? / Twilio?
-- change password
 - disable "long time no see" user:
     - cronjob?
     - check condition when user login?

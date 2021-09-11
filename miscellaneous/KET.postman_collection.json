@@ -1,0 +1,482 @@
+{
+	"info": {
+		"_postman_id": "982bd858-f76e-43b0-8050-b7b71bd0f8af",
+		"name": "KET",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "auth",
+			"item": [
+				{
+					"name": "/api/auth/verification/",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"target\": \"+84964975557\",\n    \"authType\": \"SMS\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/auth/verification/",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"verification",
+								""
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "SMS",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"target\": \"000000000\",\n    \"authType\": \"SMS\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/auth/verify/",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"auth",
+										"verify",
+										""
+									]
+								}
+							},
+							"_postman_previewlanguage": null,
+							"header": null,
+							"cookie": [],
+							"body": null
+						},
+						{
+							"name": "MAIL",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"target\": \"hieu@mailinator.com\",\n    \"authType\": \"MAIL\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/auth/verify/",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"auth",
+										"verify",
+										""
+									]
+								}
+							},
+							"_postman_previewlanguage": null,
+							"header": null,
+							"cookie": [],
+							"body": null
+						}
+					]
+				},
+				{
+					"name": "/api/auth/verification/",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"code\": \"453630\",\n    \"sessionToken\": \"eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJ0b2tlbl90eXBlIjoic2Vzc2lvbiIsImV4cCI6MTY2Mjg3MTEwNiwianRpIjoiY2ZhNjYxMjg0YzhmNDA0MDk5ZTJhZjAwMjZlZTA1OWQiLCJoYXNoX2NvZGUiOiJhcmdvbjIkYXJnb24yaWQkdj0xOSRtPTEwMjQwMCx0PTIscD04JGVqSnBOVzB6S2pCNk5uaGxKV05rYXprME1pTnFiVFl6WnlaMk5qZGlObW80WldaaU5EWjBRRzlBWW5oemVXdzVJVGMkaWttYlp4OElQaHZUZ09oUjdRZVNmQSIsInVzZXJuYW1lIjoiKzg0OTY0OTc1NTU3IiwiYXV0aF90eXBlIjoiU01TIn0.keiTFQZrWhYn0SW7pqWxk75qmKDCcJ_1D0zsamkOqnXViC0pU9ZYS7aHYPzUCd5FG6Sagi9GRa6dMPWAce1mpg\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/auth/verification/",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"verification",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/auth/",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"+84964975557\",\n    \"password\": \"123\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/auth/",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/auth/forgot-password/",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"+84964975557\",\n    \"authType\": \"SMS\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/auth/forgot-password/",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"forgot-password",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/auth/challenge/ NEW_PASSWORD_REQUIRED",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"challenge\": \"NEW_PASSWORD_REQUIRED\",\n    \"user_uuid\": \"ef3b049e-fe22-4c47-b3f2-9b4732c379fa\",\n    \"password\": \"123\",\n    \"sessionToken\": \"eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJ0b2tlbl90eXBlIjoic2Vzc2lvbiIsImV4cCI6MTY2Mjg3NzM4NywianRpIjoiOTZmNWFmNzNlMGQ0NDQwNGIzOTFmZWU4Y2RjOTA3MjciLCJ1c2VyX3V1aWQiOiJlZjNiMDQ5ZS1mZTIyLTRjNDctYjNmMi05YjQ3MzJjMzc5ZmEiLCJoYXNoX3VzZXJfdXVpZCI6ImFyZ29uMiRhcmdvbjJpZCR2PTE5JG09MTAyNDAwLHQ9MixwPTgkZWpKcE5XMHpLakI2Tm5obEpXTmthemswTWlOcWJUWXpaeVoyTmpkaU5tbzRaV1ppTkRaMFFHOUFZbmh6ZVd3NUlUYyRQQmpsTkthL0VjOFBXcTZyZWVpbnJBIn0.GwLNzsMhVceuTWNJUm7rWOLD3oox0tg8aXDn1UrSxrP03zJu3m_pZsSjT-_ri3DLRrlLnWxDYd1a3BpmO7yZMA\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/auth/challenge/",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"challenge",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/auth/challenge/ ACTIVATION_CODE_VERIFIER",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"challenge\": \"ACTIVATION_CODE_VERIFIER\",\n    \"code\": \"601282\",\n    \"userUuid\": \"ef3b049e-fe22-4c47-b3f2-9b4732c379fa\",\n    \"sessionToken\": \"eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJ0b2tlbl90eXBlIjoic2Vzc2lvbiIsImV4cCI6MTY2Mjg3ODM5MCwianRpIjoiYTVhNjllMjRkOGYzNDQyMjliNTY5YzQwMDc1YjYwYjAiLCJ1c2VyX3V1aWQiOiJlZjNiMDQ5ZS1mZTIyLTRjNDctYjNmMi05YjQ3MzJjMzc5ZmEiLCJoYXNoX3VzZXJfdXVpZCI6ImFyZ29uMiRhcmdvbjJpZCR2PTE5JG09MTAyNDAwLHQ9MixwPTgkZWpKcE5XMHpLakI2Tm5obEpXTmthemswTWlOcWJUWXpaeVoyTmpkaU5tbzRaV1ppTkRaMFFHOUFZbmh6ZVd3NUlUYyRQQmpsTkthL0VjOFBXcTZyZWVpbnJBIiwiaGFzaF9jb2RlIjoiYXJnb24yJGFyZ29uMmlkJHY9MTkkbT0xMDI0MDAsdD0yLHA9OCRlakpwTlcwektqQjZObmhsSldOa2F6azBNaU5xYlRZelp5WjJOamRpTm1vNFpXWmlORFowUUc5QVluaHplV3c1SVRjJHZ1OEZINUdGZHpjWnRIYmRHMjhkSVEifQ.qWAa9cUiO5vdYflgD6rbV_bjehSRgtHnvWNxCskgicMDAievmT28ooYWoBbcVN6L6Flqh8lxMjVoavbw_-0iAg\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/auth/challenge/",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"challenge",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "users",
+			"item": [
+				{
+					"name": "/api/users/",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"sessionToken\": \"eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJ0b2tlbl90eXBlIjoic2Vzc2lvbiIsImV4cCI6MTY2Mjg3MTEyMywianRpIjoiYTI5MzQ3MzAxNzQ2NGNlYzk0ZmY0YTkwMjY3YTlhOWIiLCJ1c2VybmFtZSI6Iis4NDk2NDk3NTU1NyIsImF1dGhfdHlwZSI6IlNNUyJ9.FFqf4jfyJRhygPhfvmrGfzdY6J3jCSVu2qqFQLTA13uMkHPVlSn4vs8cpCH5nDNmoeQUEYnRWU_dLKZ5KaQmIQ\",\n    \"password\": \"123\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/users/",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/users/<user_uuid>/",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/users/{{user_uuid}}/",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"{{user_uuid}}",
+								""
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "/api/users/<user_uuid>/",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/api/users/{{user_uuid}}/",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"users",
+										"{{user_uuid}}",
+										""
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": null,
+							"cookie": [],
+							"body": "{\n    \"lastLogin\": \"2021-09-11T08:34:03.784981Z\",\n    \"username\": \"+84964975557\",\n    \"firstName\": \"\",\n    \"lastName\": \"\",\n    \"dateJoined\": \"2021-09-11T04:39:00.827141Z\",\n    \"userUuid\": \"ef3b049e-fe22-4c47-b3f2-9b4732c379fa\",\n    \"status\": \"CONFIRMED\",\n    \"email\": null,\n    \"phone\": \"+84964975557\",\n    \"attributes\": null,\n    \"groups\": [\n        \"END_USER\"\n    ]\n}"
+						}
+					]
+				},
+				{
+					"name": "/api/users/<user_uuid>/change-password/",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"password\": \"321\",\n    \"newPassword\": \"123\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/users/{{user_uuid}}/change-password/",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"{{user_uuid}}",
+								"change-password",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "notifications",
+			"item": [
+				{
+					"name": "/api/notifications/",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/notifications/",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"notifications",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "test",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"hieu0\",\n    \"password\": \"hieu0\",\n    \"email\": \"hieu0@mailinator.com\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/api/dummies/",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"dummies",
+						""
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "url",
+			"value": ""
+		},
+		{
+			"key": "jwt",
+			"value": ""
+		},
+		{
+			"key": "user_uuid",
+			"value": ""
+		}
+	]
+}

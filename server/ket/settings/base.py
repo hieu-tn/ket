@@ -49,6 +49,7 @@ SHARED_APPS = [
 
 LOCAL_APPS = [
     'apps.contrib',
+    'apps.dummies',
     'apps.users',
     'apps.authentication',
     'apps.notifications',
