@@ -26,10 +26,14 @@
 ## APP (Angular) ##
 
 #### Done ####
-
-#### TODO ####
 - setup project
 - config
+
+#### TODO ####
+- custom Material
+- create spinner
+- create sign up component + store
+- create log in + store
 
 - - - -
 
