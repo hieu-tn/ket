@@ -23,4 +23,4 @@ ket.tasks:
 	docker exec -it ${SERVER_CONTAINER} celery -A ket worker -l INFO
 
 ket.app:
-	cd ${APP_DIRECTORY} && flutter run
+	cd ${APP_DIRECTORY} && npm start
