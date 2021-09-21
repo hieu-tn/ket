@@ -1,0 +1,28 @@
+.title {
+  text-align: center;
+}
+
+.form {
+  max-width: 600px;
+  margin: auto;
+}
+
+.form-verification {
+  .form-group {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .method {
+    width: 30%;
+  }
+
+  .target {
+    width: 60%;
+  }
+}
+
+.actions {
+  text-align: center;
+}

@@ -2,23 +2,25 @@ import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { authActionTypes } from './auth.actions';
 import { map } from 'rxjs/operators';
-import { of } from 'rxjs';
-import * as authActions from './auth.actions'
-
+import * as authActions from './auth.actions';
 
 
 @Injectable()
 export class AuthEffects {
 
-  login$ = createEffect(() => this.actions$.pipe(
-    ofType(authActionTypes.login),
+  getVerification$ = createEffect(() => this.actions$.pipe(
+    ofType(authActionTypes.getVerification),
     map(() => {
-      return authActions.loginSuccess({
-        challenge: ''
-      });
+      return authActions.getVerificationSuccess(true);
     })
   ));
 
+  verifyCode$ = createEffect(() => this.actions$.pipe(
+    ofType(authActionTypes.verifyCode),
+    map(() => {
+      return authActions.verifyCodeSuccess({});
+    })
+  ));
 
   constructor(private actions$: Actions) {}
 

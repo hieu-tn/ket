@@ -1,28 +1,56 @@
 import { createAction, props } from '@ngrx/store';
-import {
-  ILoginDispatchAction,
-  ILoginSuccessDispatchAction,
-} from './auth.models';
-
+import { IGetVerificationDispatchAction, IRegistrationDispatchAction, IVerifyCodeDispatchAction } from './auth.models';
 
 
 export enum authActionTypes {
-  login = '[Auth] Login',
-  loginSuccess = '[Auth] Login Success',
-  loginFailure = '[Auth] Login Failure',
+  getVerification = '[Auth] Get Verification',
+  getVerificationSuccess = '[Auth] Get Verification Success',
+  getVerificationFailure = '[Auth] Get Verification Failure',
+
+  verifyCode = '[Auth] Verify code',
+  verifyCodeSuccess = '[Auth] Verify code Success',
+  verifyCodeFailure = '[Auth] Verify code Failure',
+
+  registration = '[Auth] Registration',
+  registrationSuccess = '[Auth] Registration Success',
+  registrationFailure = '[Auth] Registration Failure',
 }
 
-export const login = createAction(
-  authActionTypes.login,
-  (payload: ILoginDispatchAction) => ({payload}),
+export const getVerification = createAction(
+  authActionTypes.getVerification,
+  (payload: IGetVerificationDispatchAction) => ({payload}),
+);
+export const getVerificationSuccess = createAction(
+  authActionTypes.getVerificationSuccess,
+  (payload: any) => ({payload}),
+);
+export const getVerificationFailure = createAction(
+  authActionTypes.getVerificationFailure,
+  (payload: any) => ({payload}),
 );
 
-export const loginSuccess = createAction(
-  authActionTypes.loginSuccess,
-  (payload: ILoginSuccessDispatchAction) => ({payload}),
+export const verifyCode = createAction(
+  authActionTypes.verifyCode,
+  (payload: IVerifyCodeDispatchAction) => ({payload})
+);
+export const verifyCodeSuccess = createAction(
+  authActionTypes.verifyCodeSuccess,
+  (payload: any) => ({payload})
+);
+export const verifyCodeFailure = createAction(
+  authActionTypes.verifyCodeFailure,
+  (payload: any) => ({payload})
 );
 
-export const loginFailure = createAction(
-  authActionTypes.loginFailure,
-  props<any>()
+export const registration = createAction(
+  authActionTypes.registration,
+  (payload: IRegistrationDispatchAction) => ({payload})
+);
+export const registrationSuccess = createAction(
+  authActionTypes.registrationSuccess,
+  (payload: any) => ({payload})
+);
+export const registrationFailure = createAction(
+  authActionTypes.registrationFailure,
+  (payload: any) => ({payload})
 );

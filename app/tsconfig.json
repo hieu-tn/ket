@@ -23,14 +23,8 @@
     "paths": {
       "@/environments/*": ["src/environments/*"],
       "@/state/*": ["src/app/state/*"],
-      "@/auth/*": ["src/app/auth/*"],
-      "@/services/*": [
-        "src/app/services/*"
-      ],
-      "hihi": [
-        "dist/hihi/hihi",
-        "dist/hihi"
-      ]
+      "@/modules/*": ["src/app/modules/*"],
+      "@/constants/*": ["src/app/constants/*"]
     }
   },
   "angularCompilerOptions": {

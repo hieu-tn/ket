@@ -1,12 +1,13 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { OverlayModule } from '@angular/cdk/overlay';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { StateModule } from '@/state/state.module';
-import { AuthModule } from '@/auth/auth.module';
+import { SharedModule } from '@/modules/shared/shared.module';
 
 
 @NgModule({
@@ -18,7 +19,8 @@ import { AuthModule } from '@/auth/auth.module';
     AppRoutingModule,
     BrowserAnimationsModule,
     StateModule,
-    AuthModule,
+    SharedModule,
+    OverlayModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

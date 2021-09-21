@@ -1,0 +1,16 @@
+@import '~@angular/material/theming';
+@import 'variables';
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+}
+
+.container {
+  max-width: $container-max-width;
+  margin: auto;
+  padding: 0 $gutter;
+}
