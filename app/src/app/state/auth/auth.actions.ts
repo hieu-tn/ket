@@ -1,5 +1,10 @@
 import { createAction, props } from '@ngrx/store';
-import { IGetVerificationDispatchAction, IRegistrationDispatchAction, IVerifyCodeDispatchAction } from './auth.models';
+import {
+  IGetVerificationPayloadAction,
+  IRegistrationPayloadAction, IVerification,
+  IVerifyCode,
+  IVerifyCodePayloadAction
+} from './auth.models';
 
 
 export enum authActionTypes {
@@ -18,11 +23,11 @@ export enum authActionTypes {
 
 export const getVerification = createAction(
   authActionTypes.getVerification,
-  (payload: IGetVerificationDispatchAction) => ({payload}),
+  (payload: IGetVerificationPayloadAction) => ({payload}),
 );
 export const getVerificationSuccess = createAction(
   authActionTypes.getVerificationSuccess,
-  (payload: any) => ({payload}),
+  (payload: IVerification) => ({payload}),
 );
 export const getVerificationFailure = createAction(
   authActionTypes.getVerificationFailure,
@@ -31,11 +36,11 @@ export const getVerificationFailure = createAction(
 
 export const verifyCode = createAction(
   authActionTypes.verifyCode,
-  (payload: IVerifyCodeDispatchAction) => ({payload})
+  (payload: IVerifyCodePayloadAction) => ({payload})
 );
 export const verifyCodeSuccess = createAction(
   authActionTypes.verifyCodeSuccess,
-  (payload: any) => ({payload})
+  (payload: IVerifyCode) => ({payload})
 );
 export const verifyCodeFailure = createAction(
   authActionTypes.verifyCodeFailure,
@@ -44,7 +49,7 @@ export const verifyCodeFailure = createAction(
 
 export const registration = createAction(
   authActionTypes.registration,
-  (payload: IRegistrationDispatchAction) => ({payload})
+  (payload: IRegistrationPayloadAction) => ({payload})
 );
 export const registrationSuccess = createAction(
   authActionTypes.registrationSuccess,

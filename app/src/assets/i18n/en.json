@@ -1,0 +1,51 @@
+{
+  "common": {
+    "formError": {
+      "required": "this field is required",
+      "email": "wrong email format",
+      "phoneRegex": "wrong phone number format. Should be +8412345678",
+      "codeRegex": "wrong code format. Should be 123456"
+    },
+    "notifications": {
+      "verification": {
+        "success": "get code successfully",
+        "failure": "get code failed"
+      },
+      "verifyCode": {
+        "success": "code is valid",
+        "failure": "verify code failed"
+      },
+      "registration": {
+        "success": "register successfully",
+        "failure": "register failed"
+      }
+    }
+  },
+  "registration": {
+    "pageTitle": "registration",
+    "verificationForm": {
+      "formTitle": "verification code",
+      "authType": {
+        "label": "method"
+      },
+      "target": {
+        "label": "email / phone"
+      },
+      "submitBtn": "get verification code"
+    },
+    "codeForm": {
+      "formTitle": "code",
+      "code": {
+        "label": "code"
+      },
+      "submitBtn": "verify"
+    },
+    "registrationForm": {
+      "formTitle": "registration",
+      "password": {
+        "label": "password"
+      },
+      "submitBtn": "register"
+    }
+  }
+}

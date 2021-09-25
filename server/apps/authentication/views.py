@@ -59,39 +59,8 @@ class AuthenticationViewSet(viewsets.ViewSet):
         else:
             return Response(resp)
 
-    @action(methods=['post', 'get'], detail=False, url_path='verification', url_name='Verify anonymous user')
-    def verification(self, request):
-        try:
-            if request.method == contrib_constant.HTTP_METHOD.POST.value:
-                return self._post_verification(request)
-            elif request.method == contrib_constant.HTTP_METHOD.GET.value:
-                return self._get_verification(request)
-        except Exception as e:
-            raise e
-
-    def _post_verification(self, request):
-        try:
-            code, session_token = request.data['code'], request.data['session_token']
-            decoded, _ = decode_jwt_session_token(session_token)
-            if make_password(str(code), settings.SECRET_KEY) != decoded['hash_code']:
-                raise ValidationError('Invalid code')
-
-            decoded.pop('hash_code', None)
-            session_token = make_jwt_session_token(payload=decoded)
-            return Response(data=session_token)
-        except KeyError as e:
-            logger.error(e.__repr__())
-            if e.__str__().translate(str.maketrans('', '', '\'')) in ['code', 'session_token']:
-                raise ParseError('Payload needs code, sessionToken')
-            return server_error(request)
-        except DjangoValidationError as e:
-            logger.error(e.__repr__())
-            raise ValidationError(map_validation_errors_to_list(e))
-        except Exception as e:
-            logger.error(e.__repr__())
-            raise e
-
-    def _get_verification(self, request):
+    @action(methods=['post'], detail=False, url_path='verification', url_name='Get verification code')
+    def get_verification(self, request):
         try:
             target, auth_type = request.data['target'], request.data['auth_type'].upper()
             user = {}
@@ -114,6 +83,29 @@ class AuthenticationViewSet(viewsets.ViewSet):
                 }
             )
             return Response(data=session_token)
+        except DjangoValidationError as e:
+            logger.error(e.__repr__())
+            raise ValidationError(map_validation_errors_to_list(e))
+        except Exception as e:
+            logger.error(e.__repr__())
+            raise e
+
+    @action(methods=['post'], detail=False, url_path='verification-check', url_name='Verify code')
+    def post_verification(self, request):
+        try:
+            code, session_token = request.data['code'], request.data['session_token']
+            decoded, _ = decode_jwt_session_token(session_token)
+            if make_password(str(code), settings.SECRET_KEY) != decoded['hash_code']:
+                raise DjangoValidationError(message='Invalid code', code='invalid_code')
+
+            decoded.pop('hash_code', None)
+            session_token = make_jwt_session_token(payload=decoded)
+            return Response(data=session_token)
+        except KeyError as e:
+            logger.error(e.__repr__())
+            if e.__str__().translate(str.maketrans('', '', '\'')) in ['code', 'session_token']:
+                raise ParseError('Payload needs code, sessionToken')
+            return server_error(request)
         except DjangoValidationError as e:
             logger.error(e.__repr__())
             raise ValidationError(map_validation_errors_to_list(e))
@@ -160,14 +152,23 @@ class AuthenticationViewSet(viewsets.ViewSet):
             user_uuid, session_token = request.data['user_uuid'], request.data['session_token']
             decoded, _ = decode_jwt_session_token(session_token)
 
-            if user_uuid != decoded['user_uuid'] or make_password(user_uuid, settings.SECRET_KEY) != decoded['hash_user_uuid']:
+            if (
+                user_uuid != decoded['user_uuid']
+                or make_password(user_uuid, settings.SECRET_KEY) != decoded['hash_user_uuid']
+            ):
                 raise ValidationError('Invalid user uuid')
 
             user = User.end_users.get(user_uuid=user_uuid)
             resp = ChallengeSwitcher.respond(user=user, payload={**decoded, **request.data})
         except KeyError as e:
             logger.error(e.__repr__())
-            if e.__str__().translate(str.maketrans('', '', '\'')) in ['challenge', 'user_uuid', 'session_token', 'password', 'code']:
+            if e.__str__().translate(str.maketrans('', '', '\'')) in [
+                'challenge',
+                'user_uuid',
+                'session_token',
+                'password',
+                'code',
+            ]:
                 raise ParseError('Payload needs challenge, userUuid, sessionToken and password/code')
             return server_error(request)
         except InternalError as e:

@@ -38,10 +38,12 @@ class ChallengeSwitcher:
 
     def _process_force_change_password(self, user: User, *args, **kwargs):
         try:
-            token = make_jwt_session_token({
-                'user_uuid': str(user.user_uuid),
-                'hash_user_uuid': make_password(str(user.user_uuid), settings.SECRET_KEY),
-            })
+            token = make_jwt_session_token(
+                {
+                    'user_uuid': str(user.user_uuid),
+                    'hash_user_uuid': make_password(str(user.user_uuid), settings.SECRET_KEY),
+                }
+            )
         except Exception as e:
             raise e
         else:
@@ -67,11 +69,13 @@ class ChallengeSwitcher:
             code, hash_code = initiate_activation_code()
             channel = notifications_constant.CHANNEL.SMS if user.phone else None
             Notification.send(user, VerificationNotification(code)).via(channel)
-            token = make_jwt_session_token({
-                'user_uuid': str(user.user_uuid),
-                'hash_user_uuid': make_password(str(user.user_uuid), settings.SECRET_KEY),
-                'hash_code': hash_code,
-            })
+            token = make_jwt_session_token(
+                {
+                    'user_uuid': str(user.user_uuid),
+                    'hash_user_uuid': make_password(str(user.user_uuid), settings.SECRET_KEY),
+                    'hash_code': hash_code,
+                }
+            )
         except Exception as e:
             raise e
         else:

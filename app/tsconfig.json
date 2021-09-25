@@ -24,11 +24,13 @@
       "@/environments/*": ["src/environments/*"],
       "@/state/*": ["src/app/state/*"],
       "@/modules/*": ["src/app/modules/*"],
-      "@/constants/*": ["src/app/constants/*"]
+      "@/constants/*": ["src/app/constants/*"],
+      "@/services/*": ["src/app/services/*"],
+      "@/assets/*": ["src/assets/*"]
     }
   },
   "angularCompilerOptions": {
-    "enableI18nLegacyMessageIdFormat": false,
+    "enableI18nLegacyMessageIdFormat": true,
     "strictInjectionParameters": true,
     "strictInputAccessModifiers": true,
     "strictTemplates": true

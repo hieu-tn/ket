@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 
@@ -7,15 +7,18 @@ import { BlockScrollStrategy, Overlay } from '@angular/cdk/overlay';
 import { MAT_SELECT_SCROLL_STRATEGY } from '@angular/material/select';
 import * as authActions from '@/state/auth/auth.actions';
 import {
-  IGetVerificationDispatchAction,
-  IRegistrationDispatchAction,
-  IVerifyCodeDispatchAction
+  IGetVerificationPayloadAction,
+  IRegistrationPayloadAction, IVerification, IVerifyCode,
+  IVerifyCodePayloadAction
 } from '@/state/auth/auth.models';
 import { Subject } from 'rxjs';
 import { authSelectors } from '@/state/auth/auth.selectors';
 import { takeUntil } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { APP_URLS } from '@/constants/urls';
+import { AuthTypes } from '../auth.models';
+import { MatStepper } from '@angular/material/stepper';
+import { CodeRegexValidator, formControlError, PhoneRegexValidator } from '@/modules/shared/validators/form.validators';
 
 
 export function scrollFactory(overlay: Overlay): () => BlockScrollStrategy {
@@ -32,17 +35,21 @@ export function scrollFactory(overlay: Overlay): () => BlockScrollStrategy {
 })
 export class RegistrationComponent implements OnInit, OnDestroy {
 
+  @ViewChild(MatStepper) stepper!: MatStepper;
+
   verificationForm: FormGroup = new FormGroup({});
   isVerificationFormSubmitted: boolean = false;
   codeForm: FormGroup = new FormGroup({});
   isCodeFormSubmitted: boolean = false;
   registrationForm: FormGroup = new FormGroup({});
   authTypes = ['SMS', 'MAIL'];
+  formControlError = formControlError;
 
   private ngUnsubscribe = new Subject();
   private sessionToken: string = '';
 
-  constructor(private store: Store<IAppState>, private router: Router) { }
+  constructor(private store: Store<IAppState>,
+              private router: Router) { }
 
   ngOnInit(): void {
     this.initForms();
@@ -57,14 +64,14 @@ export class RegistrationComponent implements OnInit, OnDestroy {
   onVerificationFormSubmit() {
     if (this.verificationForm.invalid) return;
 
-    const payload: IGetVerificationDispatchAction = this.verificationForm.value;
+    const payload: IGetVerificationPayloadAction = this.verificationForm.value;
     this.store.dispatch(authActions.getVerification(payload));
   }
 
   onCodeFormSubmit() {
     if (this.codeForm.invalid || !this.isVerificationFormSubmitted) return;
 
-    const payload: IVerifyCodeDispatchAction = {
+    const payload: IVerifyCodePayloadAction = {
       ...this.codeForm.value,
       sessionToken: this.sessionToken
     };
@@ -74,7 +81,7 @@ export class RegistrationComponent implements OnInit, OnDestroy {
   onRegistrationFormSubmit() {
     if (this.registrationForm.invalid || !this.isVerificationFormSubmitted || !this.isCodeFormSubmitted) return;
 
-    const payload: IRegistrationDispatchAction = {
+    const payload: IRegistrationPayloadAction = {
       ...this.registrationForm.value,
       sessionToken: this.sessionToken
     };
@@ -82,21 +89,42 @@ export class RegistrationComponent implements OnInit, OnDestroy {
   }
 
   onResetClick() {
-    this.verificationForm.reset();
+    this.verificationForm.enable();
+    this.verificationForm.reset({
+      authType: {value: ''},
+      target: {value: '', disabled: true}
+    });
     this.isVerificationFormSubmitted = false;
+    this.codeForm.enable();
     this.codeForm.reset();
     this.isCodeFormSubmitted = false;
+    this.registrationForm.enable();
     this.registrationForm.reset();
   }
 
   private initForms() {
     this.verificationForm = new FormGroup({
       authType: new FormControl('', [Validators.required]),
-      target: new FormControl('', [Validators.required]),
+      target: new FormControl({value: '', disabled: true}),
     });
+
+    this.verificationForm.controls.authType.valueChanges
+      .subscribe(selectedAuthType => {
+        if (selectedAuthType === AuthTypes.MAIL) {
+          this.verificationForm.controls.target.clearValidators();
+          this.verificationForm.controls.target.addValidators([Validators.required, Validators.email]);
+        } else {
+          this.verificationForm.controls.target.clearValidators();
+          this.verificationForm.controls.target.addValidators([Validators.required, PhoneRegexValidator()]);
+        }
+        this.verificationForm.controls.target.enable();
+        this.verificationForm.controls.target.updateValueAndValidity();
+      });
+
     this.codeForm = new FormGroup({
-      code: new FormControl('', [Validators.required])
+      code: new FormControl('', [Validators.required, CodeRegexValidator(), Validators.maxLength(6), Validators.minLength(6)])
     });
+
     this.registrationForm = new FormGroup({
       password: new FormControl('', [Validators.required])
     });
@@ -107,10 +135,12 @@ export class RegistrationComponent implements OnInit, OnDestroy {
       .pipe(
         takeUntil(this.ngUnsubscribe)
       )
-      .subscribe(data => {
+      .subscribe((data: IVerification) => {
         if (data) {
+          this.verificationForm.disable();
           this.isVerificationFormSubmitted = true;
           this.sessionToken = data.sessionToken;
+          this.stepper.next();
         }
       });
 
@@ -118,10 +148,12 @@ export class RegistrationComponent implements OnInit, OnDestroy {
       .pipe(
         takeUntil(this.ngUnsubscribe)
       )
-      .subscribe(data => {
+      .subscribe((data: IVerifyCode) => {
         if (data) {
+          this.codeForm.disable();
           this.isCodeFormSubmitted = true;
           this.sessionToken = data.sessionToken;
+          this.stepper.next();
         }
       });
 
@@ -129,7 +161,7 @@ export class RegistrationComponent implements OnInit, OnDestroy {
       .pipe(
         takeUntil(this.ngUnsubscribe)
       )
-      .subscribe(data => {
+      .subscribe((data: boolean) => {
         if (data) {
           this.router.navigateByUrl(APP_URLS.login);
         }

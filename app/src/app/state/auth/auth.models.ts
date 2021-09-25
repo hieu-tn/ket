@@ -1,32 +1,43 @@
+import { AuthTypes } from '@/modules/auth/auth.models';
+
+
 export interface IAuthState {
-  verification: any
-  verifyCode: any
-  registration: any
+  verification: IVerification | any
+  verifyCode: IVerifyCode | any
+  registration: boolean | any
 }
 
-export type AuthTypes = 'SMS' | 'MAIL'
+export interface IVerification {
+  sessionToken: string
+  expiresIn?: string
+}
 
-export interface IGetVerificationDispatchAction {
+export interface IVerifyCode {
+  sessionToken: string
+  expiresIn?: string
+}
+
+export interface IGetVerificationPayloadAction {
   authType: AuthTypes
   target: string
 }
 
-export interface IVerifyCodeDispatchAction {
+export interface IVerifyCodePayloadAction {
+  sessionToken: string
   code: string
-  sessionToken: string
 }
 
-export interface IRegistrationDispatchAction {
+export interface IRegistrationPayloadAction {
+  sessionToken: string
   password: string
-  sessionToken: string
 }
 
-export interface ILoginDispatchAction {
+export interface ILoginPayloadAction {
   username: string
   password: string
 }
 
-export interface ILoginSuccessDispatchAction {
+export interface ILoginSuccessPayloadAction {
   challenge: string
   sessionToken?: string
   accessToken?: string
