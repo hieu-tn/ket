@@ -28,12 +28,14 @@
 #### Done ####
 - setup project
 - config
+- sign up component + store
+- log in + store
 
 #### TODO ####
 - custom Material
 - create spinner
-- create sign up component + store
-- create log in + store
+- dashboard component + store
+- user settings component + store
 
 - - - -
 

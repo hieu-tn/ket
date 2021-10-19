@@ -1,7 +1,6 @@
 import { authActionTypes } from '@/state/auth/auth.actions';
 
 
-
 export type loggerActionTypes = authActionTypes;
 
 export interface ILoggerAction {

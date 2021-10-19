@@ -16,7 +16,7 @@ import { ConfigService, configServiceProvider } from '@/services/config.service'
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
   ],
   imports: [
     BrowserModule,
@@ -41,6 +41,6 @@ import { ConfigService, configServiceProvider } from '@/services/config.service'
       deps: []
     }
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
 export class AppModule {}

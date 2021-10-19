@@ -37,7 +37,11 @@ export const metaReducers: MetaReducer<IAppState>[] = [debug];
     CommonModule,
     StoreModule.forRoot(reducers, {metaReducers}),
     EffectsModule.forRoot(effects),
-    StoreDevtoolsModule.instrument({name: 'KET NgRx Store DevTools', maxAge: 50, logOnly: environment.production}),
+    StoreDevtoolsModule.instrument({
+      name: 'KET NgRx Store DevTools',
+      maxAge: 50,
+      logOnly: environment.production
+    }),
   ],
 })
 export class StateModule {}

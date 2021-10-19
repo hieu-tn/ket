@@ -59,16 +59,17 @@ export class RegistrationComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
+    this.clearActions();
   }
 
-  onVerificationFormSubmit() {
+  onVerificationFormSubmit(): void {
     if (this.verificationForm.invalid) return;
 
     const payload: IGetVerificationPayloadAction = this.verificationForm.value;
     this.store.dispatch(authActions.getVerification(payload));
   }
 
-  onCodeFormSubmit() {
+  onCodeFormSubmit(): void {
     if (this.codeForm.invalid || !this.isVerificationFormSubmitted) return;
 
     const payload: IVerifyCodePayloadAction = {
@@ -78,7 +79,7 @@ export class RegistrationComponent implements OnInit, OnDestroy {
     this.store.dispatch(authActions.verifyCode(payload));
   }
 
-  onRegistrationFormSubmit() {
+  onRegistrationFormSubmit(): void {
     if (this.registrationForm.invalid || !this.isVerificationFormSubmitted || !this.isCodeFormSubmitted) return;
 
     const payload: IRegistrationPayloadAction = {
@@ -88,21 +89,21 @@ export class RegistrationComponent implements OnInit, OnDestroy {
     this.store.dispatch(authActions.registration(payload));
   }
 
-  onResetClick() {
+  onResetClick(): void {
     this.verificationForm.enable();
     this.verificationForm.reset({
       authType: {value: ''},
       target: {value: '', disabled: true}
     });
     this.isVerificationFormSubmitted = false;
-    this.codeForm.enable();
+    this.codeForm.disable();
     this.codeForm.reset();
     this.isCodeFormSubmitted = false;
-    this.registrationForm.enable();
+    this.registrationForm.disable();
     this.registrationForm.reset();
   }
 
-  private initForms() {
+  private initForms(): void {
     this.verificationForm = new FormGroup({
       authType: new FormControl('', [Validators.required]),
       target: new FormControl({value: '', disabled: true}),
@@ -124,13 +125,15 @@ export class RegistrationComponent implements OnInit, OnDestroy {
     this.codeForm = new FormGroup({
       code: new FormControl('', [Validators.required, CodeRegexValidator(), Validators.maxLength(6), Validators.minLength(6)])
     });
+    this.codeForm.disable();
 
     this.registrationForm = new FormGroup({
       password: new FormControl('', [Validators.required])
     });
+    this.registrationForm.disable();
   }
 
-  private subscriber() {
+  private subscriber(): void {
     this.store.select(authSelectors.verification)
       .pipe(
         takeUntil(this.ngUnsubscribe)
@@ -140,6 +143,7 @@ export class RegistrationComponent implements OnInit, OnDestroy {
           this.verificationForm.disable();
           this.isVerificationFormSubmitted = true;
           this.sessionToken = data.sessionToken;
+          this.codeForm.enable();
           this.stepper.next();
         }
       });
@@ -153,6 +157,7 @@ export class RegistrationComponent implements OnInit, OnDestroy {
           this.codeForm.disable();
           this.isCodeFormSubmitted = true;
           this.sessionToken = data.sessionToken;
+          this.registrationForm.enable();
           this.stepper.next();
         }
       });
@@ -166,5 +171,11 @@ export class RegistrationComponent implements OnInit, OnDestroy {
           this.router.navigateByUrl(APP_URLS.login);
         }
       });
+  }
+
+  private clearActions(): void {
+    this.store.dispatch(authActions.clearGetVerification());
+    this.store.dispatch(authActions.clearVerifyCode());
+    this.store.dispatch(authActions.clearRegistration());
   }
 }

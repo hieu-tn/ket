@@ -28,9 +28,8 @@ import { CapitalizePipe } from './pipes/capitalize.pipe';
   imports: [
     CommonModule,
     RouterModule,
-    MatButtonModule,
-    MatSnackBarModule,
     TranslationModule,
+    MatSnackBarModule,
     ReactiveFormsModule,
     MatFormFieldModule,
     MatSelectModule,
@@ -43,9 +42,7 @@ import { CapitalizePipe } from './pipes/capitalize.pipe';
   exports: [
     TranslationModule,
     CapitalizePipe,
-    MatButtonModule,
     MatSnackBarModule,
-    TranslationModule,
     ReactiveFormsModule,
     MatFormFieldModule,
     MatSelectModule,

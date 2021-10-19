@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { authActionTypes } from './auth.actions';
 import { catchError, map, switchMap } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
+
 import * as authActions from './auth.actions';
 import { NotificationService } from '@/services/notification.service';
 import { AuthService } from '@/modules/auth/auth.service';
 import {
-  IGetVerificationPayloadAction,
+  IGetVerificationPayloadAction, ILoginPayloadAction,
   IRegistrationPayloadAction,
   IVerifyCodePayloadAction
 } from '@/state/auth/auth.models';
@@ -18,16 +18,16 @@ import {
 export class AuthEffects {
 
   getVerification$ = createEffect(() => this.actions$.pipe(
-    ofType(authActionTypes.getVerification),
-    switchMap(({payload}: {payload: IGetVerificationPayloadAction}) => {
-      return this.authService.getVerification$(payload.authType, payload.target)
+    ofType(authActions.authActionTypes.getVerification),
+    switchMap((action: {type: authActions.authActionTypes, payload: IGetVerificationPayloadAction}) => {
+      return this.authService.getVerification$(action.payload.authType, action.payload.target)
         .pipe(
           map(response => {
-            this.notificationService.success(this.translateService.instant('common.notifications.verification.success'));
+            this.notificationService.actionSuccess(action.type);
             return authActions.getVerificationSuccess(response);
           }),
           catchError((err: any) => {
-            this.notificationService.error(this.translateService.instant('common.notifications.verification.failure'));
+            this.notificationService.actionFailure(action.type);
             return of(authActions.getVerificationFailure(err));
           })
         );
@@ -35,16 +35,16 @@ export class AuthEffects {
   ));
 
   verifyCode$ = createEffect(() => this.actions$.pipe(
-    ofType(authActionTypes.verifyCode),
-    switchMap(({payload}: {payload: IVerifyCodePayloadAction}) => {
-      return this.authService.verifyCode$(payload.sessionToken, payload.code)
+    ofType(authActions.authActionTypes.verifyCode),
+    switchMap((action: {type: authActions.authActionTypes, payload: IVerifyCodePayloadAction}) => {
+      return this.authService.verifyCode$(action.payload.sessionToken, action.payload.code)
         .pipe(
           map(response => {
-            this.notificationService.success(this.translateService.instant('common.notifications.verifyCode.success'));
+            this.notificationService.actionSuccess(action.type);
             return authActions.verifyCodeSuccess(response);
           }),
           catchError(err => {
-            this.notificationService.error(this.translateService.instant('common.notifications.verifyCode.failure'));
+            this.notificationService.actionFailure(action.type);
             return of(authActions.getVerificationFailure(err));
           })
         );
@@ -52,21 +52,38 @@ export class AuthEffects {
   ));
 
   register$ = createEffect(() => this.actions$.pipe(
-    ofType(authActionTypes.registration),
-    switchMap(({payload}: {payload: IRegistrationPayloadAction}) => {
-      return this.authService.register$(payload.sessionToken, payload.password)
+    ofType(authActions.authActionTypes.registration),
+    switchMap((action: {type: authActions.authActionTypes, payload: IRegistrationPayloadAction}) => {
+      return this.authService.register$(action.payload.sessionToken, action.payload.password)
         .pipe(
           map(response => {
-            this.notificationService.success(this.translateService.instant('common.notifications.registration.success'));
+            this.notificationService.actionSuccess(action.type);
             return authActions.registrationSuccess(response);
           }),
           catchError(err => {
-            this.notificationService.error(this.translateService.instant('common.notifications.registration.failure'));
+            this.notificationService.actionFailure(action.type);
             return of(authActions.registrationFailure(err));
           })
         );
     })
   ));
+
+  login$ = createEffect(() => this.actions$.pipe(
+    ofType(authActions.authActionTypes.login),
+    switchMap((action: {type: authActions.authActionTypes, payload: ILoginPayloadAction}) => {
+      return this.authService.login$(action.payload.username, action.payload.password)
+        .pipe(
+          map(response => {
+            this.notificationService.actionSuccess(action.type);
+            return authActions.loginSuccess(response);
+          }),
+          catchError(err => {
+            this.notificationService.actionFailure(action.type);
+            return of(authActions.loginFailure(err));
+          })
+        )
+    })
+  ))
 
   constructor(private actions$: Actions,
               private notificationService: NotificationService,

@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { TranslateService } from '@ngx-translate/core';
 
 import { NOTIFICATION_LIFETIME } from '@/constants/common';
 
@@ -11,7 +12,7 @@ export class NotificationService {
 
   private btnText: string = 'Close';
 
-  constructor(private _snackBar: MatSnackBar) { }
+  constructor(private _snackBar: MatSnackBar, private translateService: TranslateService) { }
 
   success(message: string): void {
     this._snackBar.open(message, this.btnText, {
@@ -29,5 +30,15 @@ export class NotificationService {
     this._snackBar.open(message, this.btnText, {
       duration: NOTIFICATION_LIFETIME,
     });
+  }
+
+  actionSuccess(type: string): void {
+    const str = type + ' ' + this.translateService.instant('common.notifications.success');
+    this.success(str);
+  }
+
+  actionFailure(type: string): void {
+    const str = type + ' ' + this.translateService.instant('common.notifications.failure');
+    this.error(str);
   }
 }

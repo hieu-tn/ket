@@ -15,3 +15,23 @@ html, body {
   padding: 0 $gutter;
 }
 
+.form {
+  max-width: 600px;
+  margin: auto;
+}
+
+.page-title {
+  h1 {
+    text-align: center;
+  }
+}
+
+.w-100 {
+  width: 100%;
+}
+
+.mat-stepper-horizontal[hide-header] {
+  .mat-horizontal-stepper-header {
+    display: none;
+  }
+}

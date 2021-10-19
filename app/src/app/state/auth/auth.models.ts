@@ -5,6 +5,7 @@ export interface IAuthState {
   verification: IVerification | any
   verifyCode: IVerifyCode | any
   registration: boolean | any
+  login: ILogin | any
 }
 
 export interface IVerification {
@@ -15,6 +16,13 @@ export interface IVerification {
 export interface IVerifyCode {
   sessionToken: string
   expiresIn?: string
+}
+
+export interface ILogin {
+  challenge: string
+  sessionToken?: string
+  accessToken?: string
+  userUuid?: string
 }
 
 export interface IGetVerificationPayloadAction {
@@ -35,11 +43,4 @@ export interface IRegistrationPayloadAction {
 export interface ILoginPayloadAction {
   username: string
   password: string
-}
-
-export interface ILoginSuccessPayloadAction {
-  challenge: string
-  sessionToken?: string
-  accessToken?: string
-  userUuid?: string
 }

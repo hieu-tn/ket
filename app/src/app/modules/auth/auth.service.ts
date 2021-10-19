@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { AuthTypes } from './auth.models';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { ConfigService } from '@/services/config.service';
 import { map } from 'rxjs/operators';
 
@@ -29,5 +29,10 @@ export class AuthService {
       .pipe(
         map(() => true)
       );
+  }
+
+  login$(username: string, password: string): Observable<any> {
+    const body = {username, password};
+    return this.httpClient.post(this.configService.apiUrl + '/auth/', body);
   }
 }

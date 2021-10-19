@@ -7,18 +7,8 @@
       "codeRegex": "wrong code format. Should be 123456"
     },
     "notifications": {
-      "verification": {
-        "success": "get code successfully",
-        "failure": "get code failed"
-      },
-      "verifyCode": {
-        "success": "code is valid",
-        "failure": "verify code failed"
-      },
-      "registration": {
-        "success": "register successfully",
-        "failure": "register failed"
-      }
+      "success": "successfully",
+      "failure": "failed"
     }
   },
   "registration": {
@@ -46,6 +36,19 @@
         "label": "password"
       },
       "submitBtn": "register"
+    }
+  },
+  "login": {
+    "pageTitle": "log in!",
+    "loginForm": {
+      "formTitle": "login",
+      "username": {
+        "label": "username"
+      },
+      "password": {
+        "label": "password"
+      },
+      "submitBtn": "Login"
     }
   }
 }

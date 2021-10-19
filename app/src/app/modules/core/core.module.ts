@@ -1,12 +1,14 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
+import { HomeModule } from '@/modules/core/home/home.module';
 
 
 @NgModule({
   declarations: [],
   imports: [
-    CommonModule
+    CommonModule,
+    HomeModule,
   ]
 })
-export class CoreModule { }
+export class CoreModule {}
