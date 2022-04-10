@@ -1,3 +1,8 @@
+"""
+Determine if a string is a permutation of another
+https://nbviewer.org/github/donnemartin/interactive-coding-challenges/blob/master/arrays_strings/permutation/permutation_challenge.ipynb
+"""
+
 from collections import defaultdict
 
 

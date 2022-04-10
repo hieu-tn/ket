@@ -1,3 +1,9 @@
+"""
+Determine if a string contains unique characters
+https://nbviewer.org/github/donnemartin/interactive-coding-challenges/blob/master/arrays_strings/unique_chars/unique_chars_challenge.ipynb
+"""
+
+
 class MyUniqueChars(object):
     def has_unique_chars(self, string):
         if string is None:

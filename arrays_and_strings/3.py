@@ -1,3 +1,9 @@
+"""
+Compress a string
+https://nbviewer.org/github/donnemartin/interactive-coding-challenges/blob/master/arrays_strings/compress/compress_challenge.ipynb
+"""
+
+
 class MyCompressString(object):
     def compress(self, string: str):
         if string is None:

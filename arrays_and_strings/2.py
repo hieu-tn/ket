@@ -1,4 +1,7 @@
-from collections import defaultdict
+"""
+Determine if a string is a rotation of another
+https://nbviewer.org/github/donnemartin/interactive-coding-challenges/blob/master/arrays_strings/rotation/rotation_challenge.ipynb
+"""
 
 
 class MyRotation(object):
@@ -28,6 +31,7 @@ class Rotation(object):
             return False
         s3 = s1 + s1
         return self.is_substring(s1, s2 + s2)
+
 
 # %load test_rotation.py
 import unittest
