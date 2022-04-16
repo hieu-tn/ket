@@ -2,8 +2,8 @@ source: https://github.com/donnemartin/interactive-coding-challenges#index
 
 python==3.8
 
-Arrays and Strings - 8/10
-Linked Lists - 8
+Arrays and Strings - 9/14
+Linked Lists - 2/8
 Stacks and Queues - 8
 Graphs and Trees - 21
 Sorting - 10
