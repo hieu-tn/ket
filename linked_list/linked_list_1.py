@@ -1,112 +1,114 @@
 """
-Remove duplicates from a linked list
-https://nbviewer.org/github/donnemartin/interactive-coding-challenges/blob/master/linked_lists/remove_duplicates/remove_duplicates_challenge.ipynb
+Find the kth to last element of a linked list
+https://nbviewer.org/github/donnemartin/interactive-coding-challenges/blob/master/linked_lists/kth_to_last_elem/kth_to_last_elem_challenge.ipynb
 """
-from linked_list.linked_list_7 import MyLinkedList as PersonalLinkedList, LinkedList
+from linked_list.linked_list_7 import MyLinkedList as PersonalLinkedList, LinkedList, Node
 
 
 class MyMyLinkedList(PersonalLinkedList):
-    def remove_dupes(self):
-        if self.__len__() == 0 or self.__len__() == 1:
-            return
+    def kth_to_last_elem(self, k):
+        if self.__len__() == 0 or k >= self.__len__():
+            return None
+        if k == 0:
+            return self.head.data
+        index = self.__len__() - k - 1
         node = self.head
-        prev = None
-        seen = []
-        while node is not None:
-            if node.data not in seen:
-                seen.append(node.data)
-                prev = node
-            else:
-                prev.next = node.next
+        for i in range(index):
             node = node.next
+        return node.data
 
 
 class MyLinkedList(LinkedList):
-    def remove_dupes(self):
-        if self.__len__() == 0 or self.__len__() == 1:
-            return
-        node = self.head
-        seen = set()
-        prev = None
-        while node is not None:
-            if node.data in seen:
-                prev.next = node.next
-            else:
-                seen.add(node.data)
-                prev = node
-            node = node.next
-
-    def remove_dupes_single_pointer(self):
+    def kth_to_last_elem(self, k):
+        # [7, 5, 3, 1, 2] => 3
+        # if self.__len__() == 0 or k >= self.__len__():
+        #     return None
+        # if k == 0:
+        #     return self.head.data
+        # fast = self.head
+        # slow = fast
+        # while fast is not None:
+        #     for i in range(k):
+        #         fast = fast.next
+        #         if fast is None:
+        #             break
+        #     if fast is None:
+        #         break
+        #     slow = slow.next
+        # return slow.data
         if self.head is None:
-            return
-        node = self.head
-        seen_data = set({node.data})
-        while node.next is not None:
-            if node.next.data in seen_data:
-                node.next = node.next.next
-            else:
-                seen_data.add(node.next.data)
-                node = node.next
+            return None
+        fast = self.head
+        slow = self.head
 
-    def remove_dupes_in_place(self):
-        if self.__len__() == 0 or self.__len__() == 1:
-            return
-        node = self.head
-        while node is not None:
-            curr = node.next
-            prev = node
-            while curr is not None:
-                if node.data == curr.data:
-                    prev.next = curr.next
-                else:
-                    prev = curr
-                curr = curr.next
-            node = node.next
+        # Give fast a headstart, incrementing it
+        # once for k = 1, twice for k = 2, etc
+        for _ in range(k):
+            fast = fast.next
+            # If k >= num elements, return None
+            if fast is None:
+                return None
+
+        # Increment both pointers until fast reaches the end
+        while fast.next is not None:
+            fast = fast.next
+            slow = slow.next
+        return slow.data
 
 
-# %load test_remove_duplicates.py
+# %load test_kth_to_last_elem.py
 import unittest
 
 
-class TestRemoveDupes(unittest.TestCase):
+class Test(unittest.TestCase):
 
-    def test_remove_dupes(self, linked_list):
+    def test_kth_to_last_elem(self):
         print('Test: Empty list')
-        # linked_list.remove_dupes()
-        linked_list.remove_dupes_single_pointer()
-        self.assertEqual(linked_list.get_all_data(), [])
+        linked_list = MyMyLinkedList(None)
+        self.assertEqual(linked_list.kth_to_last_elem(0), None)
 
-        print('Test: One element list')
-        linked_list.insert_to_front(2)
-        # linked_list.remove_dupes()
-        linked_list.remove_dupes_single_pointer()
-        self.assertEqual(linked_list.get_all_data(), [2])
+        print('Test: k >= len(list)')
+        self.assertEqual(linked_list.kth_to_last_elem(100), None)
 
-        print('Test: General case, duplicates')
-        linked_list.insert_to_front(1)
+        print('Test: One element, k = 0')
+        head = Node(2)
+        linked_list = MyMyLinkedList(head)
+        self.assertEqual(linked_list.kth_to_last_elem(0), 2)
+
+        print('Test: General case')
         linked_list.insert_to_front(1)
         linked_list.insert_to_front(3)
-        linked_list.insert_to_front(2)
+        linked_list.insert_to_front(5)
+        linked_list.insert_to_front(7)
+        self.assertEqual(linked_list.kth_to_last_elem(2), 3)
+
+        print('Success: test_kth_to_last_elem')
+
+        print('Test: Empty list')
+        linked_list = MyLinkedList(None)
+        self.assertEqual(linked_list.kth_to_last_elem(0), None)
+
+        print('Test: k >= len(list)')
+        self.assertEqual(linked_list.kth_to_last_elem(100), None)
+
+        print('Test: One element, k = 0')
+        head = Node(2)
+        linked_list = MyLinkedList(head)
+        self.assertEqual(linked_list.kth_to_last_elem(0), 2)
+
+        print('Test: General case')
+        linked_list.insert_to_front(1)
         linked_list.insert_to_front(3)
-        linked_list.insert_to_front(1)
-        linked_list.insert_to_front(1)
-        # linked_list.remove_dupes()
-        linked_list.remove_dupes_single_pointer()
-        self.assertEqual(linked_list.get_all_data(), [1, 3, 2])
+        linked_list.insert_to_front(5)
+        linked_list.insert_to_front(7)
+        self.assertEqual(linked_list.kth_to_last_elem(2), 3)
 
-        print('Test: General case, no duplicates')
-        linked_list.remove_dupes()
-        self.assertEqual(linked_list.get_all_data(), [1, 3, 2])
-
-        print('Success: test_remove_dupes\n')
+        print('Success: test_kth_to_last_elem')
 
 
 def main():
-    test = TestRemoveDupes()
-    # linked_list = MyMyLinkedList(None)
-    # test.test_remove_dupes(linked_list)
-    linked_list = MyLinkedList(None)
-    test.test_remove_dupes(linked_list)
+    test = Test()
+    test.test_kth_to_last_elem()
 
 
 if __name__ == '__main__':

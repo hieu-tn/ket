@@ -32,7 +32,9 @@ class MyLinkedList(object):
     def insert_to_front(self, data):
         if data is None:
             return
-        self.head = MyNode(data, self.head)
+        node = MyNode(data, self.head)
+        self.head = node
+        return node
 
     def append(self, data):
         if data is None:
