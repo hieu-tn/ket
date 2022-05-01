@@ -23,11 +23,14 @@ class MyLinkedList(object):
 
     def __len__(self):
         node = self.head
-        count = 0
+        seen = set()
         while node is not None:
-            count += 1
+            if id(node) not in seen:
+                seen.add(id(node))
+            else:
+                break
             node = node.next
-        return count
+        return len(seen)
 
     def insert_to_front(self, data):
         if data is None:
@@ -107,12 +110,21 @@ class LinkedList(object):
         self.head = head
 
     def __len__(self):
-        curr = self.head
-        counter = 0
-        while curr is not None:
-            counter += 1
-            curr = curr.next
-        return counter
+        # curr = self.head
+        # counter = 0
+        # while curr is not None:
+        #     counter += 1
+        #     curr = curr.next
+        # return counter
+        node = self.head
+        seen = set()
+        while node is not None:
+            if id(node) not in seen:
+                seen.add(id(node))
+            else:
+                break
+            node = node.next
+        return len(seen)
 
     def insert_to_front(self, data):
         if data is None:
